@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageId>TTNet.Data</PackageId>
+    <Version>3.0.0</Version>
+    <Authors>Eduardo Diez Viñuela</Authors>
+    <Description>A .NET library for The Things Network Data API</Description>
+    <RepositoryUrl>https://github.com/ed10vi/TTNet.Data</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <!--<PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>-->
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="4.7.0" />
+    <PackageReference Include="MQTTnet.NETStandard" Version="3.0.8" />
+  </ItemGroup>
+
+</Project>
