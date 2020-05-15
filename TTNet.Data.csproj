@@ -15,8 +15,8 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="4.7.0" />
-    <PackageReference Include="MQTTnet.NETStandard" Version="3.0.8" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <PackageReference Include="MQTTnet" Version="3.0.10" />
   </ItemGroup>
 
   <ItemGroup>
