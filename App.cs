@@ -378,7 +378,8 @@ namespace TTNet.Data
         /// </summary>
         /// <returns>The disconnection task.</returns>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public async Task Disconnect(CancellationToken cancellationToken) => await MqttClient.DisconnectAsync(null, cancellationToken);
+        public async Task Disconnect(CancellationToken cancellationToken) =>
+            await MqttClient.DisconnectAsync(new MqttClientDisconnectOptions(), cancellationToken);
 
         private async void OnConnected(MqttClientConnectedEventArgs e)
         {
