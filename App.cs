@@ -348,7 +348,7 @@ namespace TTNet.Data
 
             // Handle MQTT events
             MqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate((Action<MqttClientConnectedEventArgs>)OnConnected);
-            MqttClient.UseDisconnectedHandler(async e => await Task.Run(() => Disconnected.Invoke(this, e)));
+            MqttClient.UseDisconnectedHandler(async e => await Task.Run(() => Disconnected(this, e)));
             MqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate((Action<MqttApplicationMessageReceivedEventArgs>)OnApplicationMessageReceived);
         }
 
@@ -429,7 +429,7 @@ namespace TTNet.Data
                 }
             }
 
-            Connected.Invoke(this, e);
+            Connected(this, e);
         }
 
         private void OnApplicationMessageReceived(MqttApplicationMessageReceivedEventArgs e)
@@ -447,11 +447,11 @@ namespace TTNet.Data
                 try
                 {
                     msg = JsonDocument.Parse(e.ApplicationMessage.Payload, DocumentOptions).RootElement.ConvertTo<Message<JsonElement>>();
-                    MessageReceivedField.Invoke(this, new MessageReceivedEventArgs(msg, e.ApplicationMessage.Topic, topic));
+                    MessageReceivedField(this, new MessageReceivedEventArgs(msg, e.ApplicationMessage.Topic, topic));
                 }
                 catch (Exception ex)
                 {
-                    ExceptionThrowed.Invoke(this, ex);
+                    ExceptionThrowed(this, ex);
                 }
             }
             else if (topic[3] == "events")
@@ -464,21 +464,21 @@ namespace TTNet.Data
                             try
                             {
                                 activation = JsonDocument.Parse(e.ApplicationMessage.Payload, DocumentOptions).RootElement.ConvertTo<Activation>();
-                                ActivationReceivedField.Invoke(this, new ActivationReceivedEventArgs(activation, e.ApplicationMessage.Topic, topic));
+                                ActivationReceivedField(this, new ActivationReceivedEventArgs(activation, e.ApplicationMessage.Topic, topic));
                             }
                             catch (Exception ex)
                             {
-                                ExceptionThrowed.Invoke(this, ex);
+                                ExceptionThrowed(this, ex);
                             }
                             break;
                         case "create":
-                            DeviceCreatedField.Invoke(this, new UpdateReceivedEventArgs(e.ApplicationMessage.Topic, topic));
+                            DeviceCreatedField(this, new UpdateReceivedEventArgs(e.ApplicationMessage.Topic, topic));
                             break;
                         case "update":
-                            DeviceUpdatedField.Invoke(this, new UpdateReceivedEventArgs(e.ApplicationMessage.Topic, topic));
+                            DeviceUpdatedField(this, new UpdateReceivedEventArgs(e.ApplicationMessage.Topic, topic));
                             break;
                         case "delete":
-                            DeviceDeletedField.Invoke(this, new UpdateReceivedEventArgs(e.ApplicationMessage.Topic, topic));
+                            DeviceDeletedField(this, new UpdateReceivedEventArgs(e.ApplicationMessage.Topic, topic));
                             break;
                     }
                 }
@@ -487,21 +487,21 @@ namespace TTNet.Data
                     if (topic[5] == "errors")
                     {
                         error = JsonDocument.Parse(e.ApplicationMessage.Payload, DocumentOptions).RootElement.ConvertTo<Error>();
-                        ErrorReceivedField.Invoke(this, new ErrorReceivedEventArgs(error, e.ApplicationMessage.Topic, topic));
+                        ErrorReceivedField(this, new ErrorReceivedEventArgs(error, e.ApplicationMessage.Topic, topic));
                     }
                     else if (topic[4] == "down")
                     {
                         switch (topic[5])
                         {
                             case "scheduled":
-                                MessageScheduledReceivedField.Invoke(this, new UpdateReceivedEventArgs(e.ApplicationMessage.Topic, topic));
+                                MessageScheduledReceivedField(this, new UpdateReceivedEventArgs(e.ApplicationMessage.Topic, topic));
                                 break;
                             case "sent":
                                 msgInf = JsonDocument.Parse(e.ApplicationMessage.Payload, DocumentOptions).RootElement.ConvertTo<MessageInfo>();
-                                MessageSentReceivedField.Invoke(this, new MessageInfoReceivedEventArgs(msgInf, e.ApplicationMessage.Topic, topic));
+                                MessageSentReceivedField(this, new MessageInfoReceivedEventArgs(msgInf, e.ApplicationMessage.Topic, topic));
                                 break;
                             case "acks":
-                                MessageAckReceivedField.Invoke(this, new UpdateReceivedEventArgs(e.ApplicationMessage.Topic, topic));
+                                MessageAckReceivedField(this, new UpdateReceivedEventArgs(e.ApplicationMessage.Topic, topic));
                                 break;
                         }
                     }
@@ -524,7 +524,7 @@ namespace TTNet.Data
             }
             catch (JsonException ex)
             {
-                ExceptionThrowed.Invoke(this, ex);
+                ExceptionThrowed(this, ex);
             }
         }
 
