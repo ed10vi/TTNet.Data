@@ -3,6 +3,7 @@ using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Options;
+using MQTTnet.Client.Publishing;
 using MQTTnet.Client.Receiving;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Protocol;
@@ -615,16 +616,18 @@ namespace TTNet.Data
         /// <returns>The publication task.</returns>
         /// <param name="msg">Message.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public async Task Publish<T>(Message<T> msg, CancellationToken cancellationToken)
+        public async Task<MqttClientPublishResult> Publish<T>(Message<T> msg, CancellationToken cancellationToken)
         {
+            MqttClientPublishResult result = null;
             try
             {
-                await Publish(JsonConverter.From(msg), msg.AppID, msg.DeviceID, cancellationToken);
+                result = await Publish(JsonConverter.From(msg), msg.AppID, msg.DeviceID, cancellationToken);
             }
             catch (JsonException ex)
             {
                 ExceptionThrowed(this, ex);
             }
+            return result;
         }
 
         /// <summary>
@@ -638,7 +641,7 @@ namespace TTNet.Data
         /// <param name="confirmed">If set to <c>true</c> the message must be confirmed.</param>
         /// <param name="schedule">How this message shold be screduled in the queue.</param>
         /// <typeparam name="T">A serializable type or a <see cref="T:byte[]"/> type.</typeparam>
-        public async Task Publish<T>(string deviceID, T payload, int port, CancellationToken cancellationToken, bool confirmed = false, Schedule schedule = Schedule.Replace)
+        public async Task<MqttClientPublishResult> Publish<T>(string deviceID, T payload, int port, CancellationToken cancellationToken, bool confirmed = false, Schedule schedule = Schedule.Replace)
         {
             var msg = new Message<T>
             {
@@ -654,7 +657,7 @@ namespace TTNet.Data
             else
                 msg.PayloadFields = payload;
 
-            await Publish(msg, cancellationToken);
+            return await Publish(msg, cancellationToken);
         }
 
         /// <summary>
@@ -665,8 +668,9 @@ namespace TTNet.Data
         /// <param name="appID">App identifier.</param>
         /// <param name="deviceID">Device identifier.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        private async Task Publish(string json, string appID, string deviceID, CancellationToken cancellationToken)
+        private async Task<MqttClientPublishResult> Publish(string json, string appID, string deviceID, CancellationToken cancellationToken)
         {
+            MqttClientPublishResult result;
             var message = new MqttApplicationMessageBuilder()
                 .WithTopic($"{appID}/devices/{deviceID}/down")
                 .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
@@ -675,9 +679,10 @@ namespace TTNet.Data
                 .Build();
 
             if (Managed)
-                await ManagedMqttClient.PublishAsync(message, cancellationToken);
+                result = await ManagedMqttClient.PublishAsync(message, cancellationToken);
             else
-                await MqttClient.PublishAsync(message, cancellationToken);
+                result = await MqttClient.PublishAsync(message, cancellationToken);
+            return result;
         }
         #endregion
 
