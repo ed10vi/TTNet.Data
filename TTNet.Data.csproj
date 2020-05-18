@@ -10,6 +10,7 @@
     <RepositoryType>git</RepositoryType>
     <!--<PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>-->
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageTags>IoT;LoRa;LoRaWAN;TTN;TheThingsNetwork</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
