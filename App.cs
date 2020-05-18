@@ -17,7 +17,11 @@ namespace TTNet.Data
     /// <summary>
     /// A The Things Network Application Data connection.
     /// </summary>
-    public class App : IDisposable
+    public class App : IDisposable,
+        IApplicationMessageProcessedHandler,
+        IApplicationMessageSkippedHandler,
+        IConnectingFailedHandler,
+        ISynchronizingSubscriptionsFailedHandler
     {
         private readonly string ClientID;
         private IMqttClient MqttClient;
@@ -42,6 +46,20 @@ namespace TTNet.Data
         public bool Managed
         {
             get => MqttClient == null && ManagedMqttClient != null;
+        }
+
+        /// <summary>
+        /// Count of pending messages to send.
+        /// </summary>
+        public int PendingMessagesCount
+        {
+            get
+            {
+                if (!Managed)
+                    throw new InvalidOperationException("This property is not available in managed mode");
+
+                return ManagedMqttClient.PendingApplicationMessagesCount;
+            }
         }
 
         #region Events
@@ -69,6 +87,14 @@ namespace TTNet.Data
         /// Occurs when a exception is throwed.
         /// </summary>
         public event EventHandler<Exception> ExceptionThrowed;
+        /// <summary>
+        /// Occurs when a message is processed in managed mode.
+        /// </summary>
+        public event EventHandler<Guid> MessageProcessed;
+        /// <summary>
+        /// Occurs when a message is skipped in managed mode.
+        /// </summary>
+        public event EventHandler<Guid> MessageSkipped;
 
         /// <summary>
         /// Occurs when a message is received.
@@ -405,6 +431,11 @@ namespace TTNet.Data
                 ManagedMqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(e => Connected(this, e));
                 ManagedMqttClient.UseDisconnectedHandler(async e => await Task.Run(() => Disconnected(this, e)));
                 ManagedMqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate((Action<MqttApplicationMessageReceivedEventArgs>)OnApplicationMessageReceived);
+
+                ManagedMqttClient.ApplicationMessageProcessedHandler = this;
+                ManagedMqttClient.ApplicationMessageSkippedHandler = this;
+                ManagedMqttClient.ConnectingFailedHandler = this;
+                ManagedMqttClient.SynchronizingSubscriptionsFailedHandler = this;
             }
             else
             {
@@ -609,11 +640,23 @@ namespace TTNet.Data
             }
         }
 
+        Task IApplicationMessageProcessedHandler.HandleApplicationMessageProcessedAsync(ApplicationMessageProcessedEventArgs eventArgs) =>
+            Task.Run(() => MessageProcessed(this, eventArgs.ApplicationMessage.Id));
+
+        Task IApplicationMessageSkippedHandler.HandleApplicationMessageSkippedAsync(ApplicationMessageSkippedEventArgs eventArgs) =>
+            Task.Run(() => MessageSkipped(this, eventArgs.ApplicationMessage.Id));
+
+        Task IConnectingFailedHandler.HandleConnectingFailedAsync(ManagedProcessFailedEventArgs eventArgs) =>
+            Task.Run(() => ExceptionThrowed(this, eventArgs.Exception));
+
+        Task ISynchronizingSubscriptionsFailedHandler.HandleSynchronizingSubscriptionsFailedAsync(ManagedProcessFailedEventArgs eventArgs) =>
+            Task.Run(() => ExceptionThrowed(this, eventArgs.Exception));
+
         #region Publish
         /// <summary>
         /// Send the specified message to a device.
         /// </summary>
-        /// <returns>The publication task.</returns>
+        /// <returns>The publication result.</returns>
         /// <param name="msg">Message.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         public async Task<MqttClientPublishResult> Publish<T>(Message<T> msg, CancellationToken cancellationToken)
@@ -631,9 +674,17 @@ namespace TTNet.Data
         }
 
         /// <summary>
+        /// Send the specified message to a device.
+        /// </summary>
+        /// <returns>The message <see cref="T:System.Guid"/>.</returns>
+        /// <param name="msg">Message.</param>
+        public async Task<Guid> Publish<T>(Message<T> msg) =>
+             await Publish(JsonConverter.From(msg), msg.AppID, msg.DeviceID);
+
+        /// <summary>
         /// Send the specified payload to a device.
         /// </summary>
-        /// <returns>The publication task.</returns>
+        /// <returns>The publication result.</returns>
         /// <param name="deviceID">Device identifier.</param>
         /// <param name="payload">Payload fields or a <see cref="T:byte[]"/> for a raw payload.</param>
         /// <param name="port">Port.</param>
@@ -661,29 +712,71 @@ namespace TTNet.Data
         }
 
         /// <summary>
+        /// Send the specified payload to a device.
+        /// </summary>
+        /// <returns>The message <see cref="T:System.Guid"/>.</returns>
+        /// <param name="deviceID">Device identifier.</param>
+        /// <param name="payload">Payload fields or a <see cref="T:byte[]"/> for a raw payload.</param>
+        /// <param name="port">Port.</param>
+        /// <param name="confirmed">If set to <c>true</c> the message must be confirmed.</param>
+        /// <param name="schedule">How this message shold be screduled in the queue.</param>
+        /// <typeparam name="T">A serializable type or a <see cref="T:byte[]"/> type.</typeparam>
+        public async Task<Guid> Publish<T>(string deviceID, T payload, int port, bool confirmed = false, Schedule schedule = Schedule.Replace)
+        {
+            var msg = new Message<T>
+            {
+                AppID = AppID,
+                DeviceID = deviceID,
+                Port = port,
+                Confirmed = confirmed,
+                Schedule = schedule
+            };
+
+            if (payload is byte[])
+                msg.PayloadRaw = payload as byte[];
+            else
+                msg.PayloadFields = payload;
+
+            return await Publish(msg);
+        }
+
+        /// <summary>
         /// Send the specified JSON to a device.
         /// </summary>
-        /// <returns>The publication task.</returns>
+        /// <returns>The publication result.</returns>
         /// <param name="json">JSON.</param>
         /// <param name="appID">App identifier.</param>
         /// <param name="deviceID">Device identifier.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        private async Task<MqttClientPublishResult> Publish(string json, string appID, string deviceID, CancellationToken cancellationToken)
+        private async Task<MqttClientPublishResult> Publish(string json, string appID, string deviceID, CancellationToken cancellationToken) =>
+            await MqttClient.PublishAsync(GetPublishMessage(json, appID, deviceID), cancellationToken);
+
+        /// <summary>
+        /// Send the specified JSON to a device.
+        /// </summary>
+        /// <returns>The message <see cref="T:System.Guid"/>.</returns>
+        /// <param name="json">JSON.</param>
+        /// <param name="appID">App identifier.</param>
+        /// <param name="deviceID">Device identifier.</param>
+        private async Task<Guid> Publish(string json, string appID, string deviceID)
         {
-            MqttClientPublishResult result;
-            var message = new MqttApplicationMessageBuilder()
+            var guid = Guid.NewGuid();
+
+            await ManagedMqttClient.PublishAsync(new ManagedMqttApplicationMessageBuilder()
+                .WithApplicationMessage(GetPublishMessage(json, appID, deviceID))
+                .WithId(guid)
+                .Build());
+
+            return guid;
+        }
+
+        private MqttApplicationMessage GetPublishMessage(string json, string appID, string deviceID) =>
+            new MqttApplicationMessageBuilder()
                 .WithTopic($"{appID}/devices/{deviceID}/down")
                 .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
                 .WithPayload(json)
                 .WithAtMostOnceQoS()
                 .Build();
-
-            if (Managed)
-                result = await ManagedMqttClient.PublishAsync(message, cancellationToken);
-            else
-                result = await MqttClient.PublishAsync(message, cancellationToken);
-            return result;
-        }
         #endregion
 
         /// <summary>
