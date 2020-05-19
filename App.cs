@@ -662,6 +662,9 @@ namespace TTNet.Data
         public async Task<MqttClientPublishResult> Publish<T>(Message<T> msg, CancellationToken cancellationToken)
         {
             MqttClientPublishResult result = null;
+            if (Managed)
+                throw new InvalidOperationException("In managed mode use Publish<T>(Message<T> msg)");
+
             try
             {
                 result = await Publish(JsonConverter.From(msg), msg.AppID, msg.DeviceID, cancellationToken);
@@ -678,8 +681,13 @@ namespace TTNet.Data
         /// </summary>
         /// <returns>The message <see cref="T:System.Guid"/>.</returns>
         /// <param name="msg">Message.</param>
-        public async Task<Guid> Publish<T>(Message<T> msg) =>
-             await Publish(JsonConverter.From(msg), msg.AppID, msg.DeviceID);
+        public async Task<Guid> Publish<T>(Message<T> msg)
+        {
+            if (!Managed)
+                throw new InvalidOperationException("In unmanaged mode use Publish<T>(Message<T> msg, CancellationToken cancellationToken)");
+
+            return await Publish(JsonConverter.From(msg), msg.AppID, msg.DeviceID);
+        }
 
         /// <summary>
         /// Send the specified payload to a device.
@@ -702,6 +710,9 @@ namespace TTNet.Data
                 Confirmed = confirmed,
                 Schedule = schedule
             };
+
+            if (Managed)
+                throw new InvalidOperationException("In managed mode use Publish<T>(string deviceID, T payload, int port, bool confirmed = false, Schedule schedule = Schedule.Replace)");
 
             if (payload is byte[])
                 msg.PayloadRaw = payload as byte[];
@@ -731,6 +742,9 @@ namespace TTNet.Data
                 Confirmed = confirmed,
                 Schedule = schedule
             };
+
+            if (!Managed)
+                throw new InvalidOperationException("In unmanaged mode use Publish<T>(string deviceID, T payload, int port, CancellationToken cancellationToken, bool confirmed = false, Schedule schedule = Schedule.Replace)");
 
             if (payload is byte[])
                 msg.PayloadRaw = payload as byte[];
