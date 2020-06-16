@@ -24,7 +24,11 @@ namespace TTNet.Data
         private string time
         {
             get { return Time?.ToString("yyyy-MM-ddTHH:mm:ssK"); }
-            set { Time = value != null ? DateTime.Parse(value) : default(DateTime?); }
+            set
+            {
+                DateTime time;
+                Time = value != null && DateTime.TryParse(value, out time) ? time : default(DateTime?);
+            }
         }
         /// <summary>
         /// Time when the gateway received the message - left out when gateway does not have synchronized time.
