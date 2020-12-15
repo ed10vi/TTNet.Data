@@ -31,7 +31,7 @@ namespace TTNet.Data
         /// Airtime in nanoseconds.
         /// </summary>
         [JsonPropertyName("airtime")]
-        public int Airtime { get; private set; }
+        public ulong Airtime { get; private set; }
 
         [JsonPropertyName("time")]
         private string TimeRaw
