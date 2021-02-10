@@ -302,12 +302,15 @@ namespace TTNet.Data
         /// Connect to The Things Network server.
         /// </summary>
         /// <returns><c>true</c> if connection succeded; otherwise, <c>false</c>.</returns>
-        /// <param name="accessKey">App access key.</param>
-        /// <param name="region">Region.</param>
+        /// <param name="server">Server domain name.</param>
+        /// <param name="port">Connection port.</param>
+        /// <param name="withTls">Use TLS.</param>
+        /// <param name="username">Username.</param>
+        /// <param name="apiKey">API access key.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public async Task<bool> Connect(string accessKey, string region, CancellationToken cancellationToken)
+        public async Task<bool> Connect(string server, int port, bool withTls, string username, string apiKey, CancellationToken cancellationToken = default)
         {
-            var result = await MqttClient.ConnectAsync(GetMqttClientOptions(accessKey, region), cancellationToken);
+            var result = await MqttClient.ConnectAsync(GetMqttClientOptions(server, port, withTls, username, apiKey), cancellationToken);
             return result.ResultCode == MqttClientConnectResultCode.Success;
         }
 
@@ -318,14 +321,15 @@ namespace TTNet.Data
         public Task Disconnect(CancellationToken cancellationToken = default) =>
             MqttClient.DisconnectAsync(new MqttClientDisconnectOptions(), cancellationToken);
 
-        private IMqttClientOptions GetMqttClientOptions(string accessKey, string region) =>
-            new MqttClientOptionsBuilder()
+        private IMqttClientOptions GetMqttClientOptions(string server, int port, bool withTls, string username, string apiKey)
+        {
+            var o = new MqttClientOptionsBuilder()
                 .WithClientId(ClientID)
-                .WithTcpServer($"{region}.thethings.network", 8883)
-                .WithCredentials(AppID, accessKey)
-                .WithTls()
-                .WithCleanSession()
-                .Build();
+                .WithTcpServer(server, port)
+                .WithCredentials(username, apiKey)
+                .WithCleanSession();
+            return withTls ? o.WithTls().Build() : o.Build();
+        }
 
         private async void OnConnected(MqttClientConnectedEventArgs e)
         {
