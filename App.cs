@@ -82,7 +82,11 @@ namespace TTNet.Data
             {
                 var list = MessageReceivedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.SubscribeAsync($"{AppID}/devices/+/up"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.SubscribeAsync($"{AppID}/devices/+/up");
+                    });
                 MessageReceivedField += value;
             }
             remove
@@ -90,7 +94,11 @@ namespace TTNet.Data
                 MessageReceivedField -= value;
                 var list = MessageReceivedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/up"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/up");
+                    });
             }
         }
 
@@ -103,7 +111,11 @@ namespace TTNet.Data
             {
                 var list = MessageScheduledReceivedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/down/scheduled"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/down/scheduled");
+                    });
                 MessageScheduledReceivedField += value;
             }
             remove
@@ -111,7 +123,11 @@ namespace TTNet.Data
                 MessageScheduledReceivedField -= value;
                 var list = MessageScheduledReceivedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/down/scheduled"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/down/scheduled");
+                    });
             }
         }
 
@@ -124,7 +140,11 @@ namespace TTNet.Data
             {
                 var list = MessageSentReceivedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/down/sent"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/down/sent");
+                    });
                 MessageSentReceivedField += value;
             }
             remove
@@ -132,7 +152,11 @@ namespace TTNet.Data
                 MessageSentReceivedField -= value;
                 var list = MessageSentReceivedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/down/sent"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/down/sent");
+                    });
             }
         }
 
@@ -145,7 +169,11 @@ namespace TTNet.Data
             {
                 var list = MessageAckReceivedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/down/acks"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/down/acks");
+                    });
                 MessageAckReceivedField += value;
             }
             remove
@@ -153,7 +181,11 @@ namespace TTNet.Data
                 MessageAckReceivedField -= value;
                 var list = MessageAckReceivedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/down/acks"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/down/acks");
+                    });
             }
         }
 
@@ -166,7 +198,11 @@ namespace TTNet.Data
             {
                 var list = ActivationReceivedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/activations"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/activations");
+                    });
                 ActivationReceivedField += value;
             }
             remove
@@ -174,7 +210,11 @@ namespace TTNet.Data
                 ActivationReceivedField -= value;
                 var list = ActivationReceivedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/activations"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/activations");
+                    });
             }
         }
 
@@ -187,7 +227,11 @@ namespace TTNet.Data
             {
                 var list = DeviceCreatedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/create"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/create");
+                    });
                 DeviceCreatedField += value;
             }
             remove
@@ -195,7 +239,11 @@ namespace TTNet.Data
                 DeviceCreatedField -= value;
                 var list = DeviceCreatedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/create"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/create");
+                    });
             }
         }
 
@@ -208,7 +256,11 @@ namespace TTNet.Data
             {
                 var list = DeviceUpdatedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/update"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/update");
+                    });
                 DeviceUpdatedField += value;
             }
             remove
@@ -216,7 +268,11 @@ namespace TTNet.Data
                 DeviceUpdatedField -= value;
                 var list = DeviceUpdatedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/update"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/update");
+                    });
             }
         }
 
@@ -229,7 +285,11 @@ namespace TTNet.Data
             {
                 var list = DeviceDeletedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/delete"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.SubscribeAsync($"{AppID}/devices/+/events/delete");
+                    });
                 DeviceDeletedField += value;
             }
             remove
@@ -237,7 +297,11 @@ namespace TTNet.Data
                 DeviceDeletedField -= value;
                 var list = DeviceDeletedField?.GetInvocationList();
                 if (list == null || list.Length == 0)
-                    Task.Run(async () => await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/delete"));
+                    Task.Run(async () =>
+                    {
+                        if (MqttClient.IsConnected)
+                            await MqttClient.UnsubscribeAsync($"{AppID}/devices/+/events/delete");
+                    });
             }
         }
 
