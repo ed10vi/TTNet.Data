@@ -8,6 +8,7 @@ using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Protocol;
 using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace TTNet.Data
@@ -288,7 +289,7 @@ namespace TTNet.Data
             AppID = appId;
             ClientID = Guid.NewGuid().ToString();
 
-            SerializerOptions = new JsonSerializerOptions { IgnoreNullValues = true };
+            SerializerOptions = new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
             DocumentOptions = new JsonDocumentOptions();
 
             ManagedMqttClient = new MqttFactory().CreateManagedMqttClient();
@@ -329,7 +330,7 @@ namespace TTNet.Data
                 .WithTcpServer(server, port)
                 .WithCredentials(username, apiKey)
                 .WithCleanSession();
-            return withTls ? o.WithTls().Build() : o.Build();
+            return withTls ? o.WithTls(p => p.SslProtocol = System.Security.Authentication.SslProtocols.None).Build() : o.Build();
         }
 
         private void OnApplicationMessageReceived(MqttApplicationMessageReceivedEventArgs e)

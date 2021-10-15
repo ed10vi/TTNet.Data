@@ -9,6 +9,7 @@ using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Protocol;
 using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -353,7 +354,7 @@ namespace TTNet.Data
             ClientID = Guid.NewGuid().ToString();
 
             //DateTimeFormat = new DateTimeFormat("yyyy-MM-ddTHH:mm:ssK")
-            SerializerOptions = new JsonSerializerOptions { IgnoreNullValues = true };
+            SerializerOptions = new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
             DocumentOptions = new JsonDocumentOptions();
 
             MqttClient = new MqttFactory().CreateMqttClient();
@@ -392,7 +393,7 @@ namespace TTNet.Data
                 .WithTcpServer(server, port)
                 .WithCredentials(username, apiKey)
                 .WithCleanSession();
-            return withTls ? o.WithTls().Build() : o.Build();
+            return withTls ? o.WithTls(p => p.SslProtocol = System.Security.Authentication.SslProtocols.None).Build() : o.Build();
         }
 
         private async void OnConnected(MqttClientConnectedEventArgs e)
