@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
     <PackageId>TTNet.Data</PackageId>
-    <Version>6.0.0-rc.1</Version>
+    <Version>6.0.0-rc.2</Version>
     <Authors>Eduardo Diez Viñuela</Authors>
     <Description>A .NET library for The Things Network Data API</Description>
     <RepositoryUrl>https://github.com/ed10vi/TTNet.Data</RepositoryUrl>
@@ -16,9 +16,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="6.0.0-rc.2.*" />
-    <PackageReference Include="MQTTnet" Version="3.0.16" />
-    <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="3.0.16" />
+    <PackageReference Include="System.Text.Json" Version="6.0.0" />
+    <PackageReference Include="MQTTnet" Version="3.1.0" />
+    <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup>

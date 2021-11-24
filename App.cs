@@ -401,7 +401,7 @@ namespace TTNet.Data
             Delegate[] list;
 
             // Subscribe to topics with handled events
-            if (e.AuthenticateResult.ResultCode == MqttClientConnectResultCode.Success)
+            if (e.ConnectResult.ResultCode == MqttClientConnectResultCode.Success)
             {
                 list = MessageReceivedField?.GetInvocationList();
                 if (list != null && list.Length > 0)
