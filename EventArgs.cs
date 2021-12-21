@@ -1,119 +1,54 @@
 ﻿using System;
-using System.Text.Json;
+using TTNet.Data.Model;
 
 namespace TTNet.Data
 {
     /// <summary>
-    /// Event arguments for a generic update.
+    /// Event arguments for a generic mesage.
     /// </summary>
-    public class UpdateReceivedEventArgs : EventArgs
+    public class MessageReceivedEventArgs : EventArgs
     {
         /// <summary>
         /// MQTT topic.
         /// </summary>
-        public string Topic { get; private set; }
+        public string Topic { get; init; }
 
         /// <summary>
         /// MQTT topic fields.
         /// </summary>
-        /// <value><see cref="TTNet.Data.UpdateReceivedEventArgs.Topic"/> splitted.</value>
-        public string[] TopicFields { get; private set; }
+        /// <value><see cref="TTNet.Data.MessageReceivedEventArgs.Topic"/> splitted.</value>
+        public string[] TopicFields { get; init; }
 
         /// <summary>
         /// Application identifier.
         /// </summary>
-        public string AppID => TopicFields[0];
+        public string AppID { get; init; }
+
+        /// <summary>
+        /// Tenant identifier.
+        /// </summary>
+        public string? TenantID { get; init; }
 
         /// <summary>
         /// Device identifier.
         /// </summary>
-        public string DeviceID => TopicFields[2];
+        public string DeviceID => TopicFields[3];
 
-        internal UpdateReceivedEventArgs(string topic, string[] topicFields)
+
+        /// <summary>
+        /// The message received.
+        /// </summary>
+        public Message Message { get; init; }
+
+        internal MessageReceivedEventArgs(Message msg, string topic, string[] topicFields)
         {
+            string[] apptenant = topicFields[1].Split('@');
+            Message = msg;
             Topic = topic;
             TopicFields = topicFields;
-        }
-    }
-
-    /// <summary>
-    /// Event arguments for a message received.
-    /// </summary>
-    public class MessageReceivedEventArgs : UpdateReceivedEventArgs
-    {
-        /// <summary>
-        /// The message.
-        /// </summary>
-        public Message<JsonElement> Message { get; private set; }
-
-        internal MessageReceivedEventArgs(Message<JsonElement> msg, string topic, string[] topicFields) : base(topic, topicFields)
-        {
-            Message = msg;
-        }
-    }
-
-    /// <summary>
-    /// Event arguments for an update from a sent message.
-    /// </summary>
-    public class MessageInfoReceivedEventArgs : UpdateReceivedEventArgs
-    {
-        /// <summary>
-        /// The information about the message.
-        /// </summary>
-        public MessageInfo MessageInfo { get; private set; }
-
-        internal MessageInfoReceivedEventArgs(MessageInfo msgInf, string topic, string[] topicFields) : base(topic, topicFields)
-        {
-            MessageInfo = msgInf;
-        }
-    }
-
-    /// <summary>
-    /// Event arguments for a device activation received.
-    /// </summary>
-    public class ActivationReceivedEventArgs : UpdateReceivedEventArgs
-    {
-        /// <summary>
-        /// The information about the activation.
-        /// </summary>
-        public Activation Activation { get; private set; }
-
-        internal ActivationReceivedEventArgs(Activation activation, string topic, string[] topicFields) : base(topic, topicFields)
-        {
-            Activation = activation;
-        }
-    }
-
-    /// <summary>
-    /// Event arguments for a error received.
-    /// </summary>
-    public class ErrorReceivedEventArgs : UpdateReceivedEventArgs
-    {
-        /// <summary>
-        /// The error.
-        /// </summary>
-        public Error Error { get; private set; }
-
-        /// <summary>
-        /// The type of error.
-        /// </summary>
-        public ErrorType Type { get; private set; }
-
-        internal ErrorReceivedEventArgs(Error error, string topic, string[] topicFields) : base(topic, topicFields)
-        {
-            Error = error;
-            switch (topicFields[4])
-            {
-                case "up":
-                    Type = ErrorType.Up;
-                    break;
-                case "down":
-                    Type = ErrorType.Down;
-                    break;
-                case "activations":
-                    Type = ErrorType.Activations;
-                    break;
-            }
+            AppID = apptenant[0];
+            if (apptenant.Length > 1)
+                TenantID = apptenant[1];
         }
     }
 }
