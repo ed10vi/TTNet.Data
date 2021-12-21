@@ -65,8 +65,8 @@ public class UplinkMessage
     [JsonPropertyName("received_at"), EditorBrowsable(EditorBrowsableState.Never)]
     public string? _ReceivedAt
     {
-        get => ReceivedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffffffK");
-        set => ReceivedAt = DateTime.Parse(value);
+        get => ReceivedAt?.ToString("yyyy-MM-ddTHH:mm:ss.fffffffK");
+        set => ReceivedAt = value != null ? DateTime.Parse(value) : null;
     }
 
     /// <summary>
