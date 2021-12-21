@@ -15,7 +15,7 @@ public class UplinkMessage
     /// Join Server issued identifier for the session keys used by this uplink.
     /// </summary>
     [JsonPropertyName("session_key_id")]
-    public byte[] SessionKeyId { get; init; } = null!;
+    public byte[]? SessionKeyId { get; init; }
 
     /// <summary>
     /// Frame port.
@@ -27,7 +27,7 @@ public class UplinkMessage
     /// Frame counter.
     /// </summary>
     [JsonPropertyName("f_cnt")]
-    public int FCnt { get; init; }
+    public int? FCnt { get; init; }
 
     /// <summary>
     /// Frame payload (Base64).
@@ -45,7 +45,7 @@ public class UplinkMessage
     /// A list of metadata for each antenna of each gateway that received this message.
     /// </summary>
     [JsonPropertyName("rx_metadata")]
-    public RxMetadata[] RxMetadata { get; init; } = null!;
+    public RxMetadata[]? RxMetadata { get; init; }
 
     /// <summary>
     /// Settings for the transmission.
@@ -57,13 +57,13 @@ public class UplinkMessage
     /// Timestamp at which the uplink has been received by the Network Server.
     /// </summary>
     [JsonIgnore]
-    public DateTime ReceivedAt { get; private set; }
+    public DateTime? ReceivedAt { get; private set; }
 
     /// <summary>
     /// ISO 8601 UTC timestamp at which the uplink has been received by the Network Server.
     /// </summary>
     [JsonPropertyName("received_at"), EditorBrowsable(EditorBrowsableState.Never)]
-    public string _ReceivedAt
+    public string? _ReceivedAt
     {
         get => ReceivedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffffffK");
         set => ReceivedAt = DateTime.Parse(value);
@@ -85,27 +85,27 @@ public class UplinkMessage
     /// Time-on-air, calculated by the Network Server using payload size and transmission settings.
     /// </summary>
     [JsonIgnore]
-    public TimeSpan ConsumedAirtime { get; private set; }
+    public TimeSpan? ConsumedAirtime { get; private set; }
 
     /// <summary>
     /// ISO 8601 UTC timestamp at which the uplink has been received by the Network Server.
     /// </summary>
     [JsonPropertyName("consumed_airtime"), EditorBrowsable(EditorBrowsableState.Never)]
-    public string _ConsumedAirtime
+    public string? _ConsumedAirtime
     {
-        get => $"{ConsumedAirtime.TotalSeconds}s";
-        set => ConsumedAirtime = TimeSpan.FromSeconds(double.Parse(value.TrimEnd('s'), CultureInfo.InvariantCulture));
+        get => ConsumedAirtime != null ? $"{ConsumedAirtime.Value.TotalSeconds}s" : null;
+        set => ConsumedAirtime = value != null ? TimeSpan.FromSeconds(double.Parse(value.TrimEnd('s'), CultureInfo.InvariantCulture)) : null;
     }
 
     /// <summary>
     /// IDs of the version.
     /// </summary>
     [JsonPropertyName("version_ids")]
-    public VersionIds VersionIds { get; init; } = null!;
+    public VersionIds? VersionIds { get; init; }
 
     /// <summary>
     /// IDs of the network.
     /// </summary>
     [JsonPropertyName("network_ids")]
-    public NetworkIds NetworkIds { get; init; } = null!;
+    public NetworkIds? NetworkIds { get; init; }
 }

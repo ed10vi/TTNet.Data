@@ -53,7 +53,7 @@ public class Message
     /// Downlink messages.
     /// </summary>
     [JsonPropertyName("downlinks")]
-    public Downlink[] Downlinks { get; init; } = null!;
+    public Downlink[]? Downlinks { get; init; }
 
     /// <summary>
     /// Signals if the message is coming from the Network Server or is simulated.
