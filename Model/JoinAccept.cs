@@ -19,7 +19,7 @@ public class JoinAccept
     /// Timestamp at which the uplink has been received by the Network Server.
     /// </summary>
     [JsonIgnore]
-    public DateTime ReceivedAt { get; private set; }
+    public DateTimeOffset ReceivedAt { get; private set; }
 
     /// <summary>
     /// ISO 8601 UTC timestamp at which the uplink has been received by the Network Server.
@@ -28,6 +28,6 @@ public class JoinAccept
     public string _ReceivedAt
     {
         get => ReceivedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffffffK");
-        set => ReceivedAt = DateTime.Parse(value);
+        set => ReceivedAt = DateTimeOffset.Parse(value);
     }
 }

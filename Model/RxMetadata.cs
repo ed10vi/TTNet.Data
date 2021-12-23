@@ -19,7 +19,7 @@ public class RxMetadata
     /// Timestamp at which the uplink has been received by the gateway.
     /// </summary>
     [JsonIgnore]
-    public DateTime Time { get; private set; }
+    public DateTimeOffset Time { get; private set; }
 
     /// <summary>
     /// ISO 8601 UTC timestamp at which the uplink has been received by the gateway.
@@ -28,7 +28,7 @@ public class RxMetadata
     public string _Time
     {
         get => Time.ToString("yyyy-MM-ddTHH:mm:ssK");
-        set => Time = DateTime.Parse(value);
+        set => Time = DateTimeOffset.Parse(value);
     }
 
     /// <summary>

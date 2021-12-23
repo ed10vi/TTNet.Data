@@ -57,7 +57,7 @@ public class UplinkMessage
     /// Timestamp at which the uplink has been received by the Network Server.
     /// </summary>
     [JsonIgnore]
-    public DateTime? ReceivedAt { get; private set; }
+    public DateTimeOffset? ReceivedAt { get; private set; }
 
     /// <summary>
     /// ISO 8601 UTC timestamp at which the uplink has been received by the Network Server.
@@ -66,7 +66,7 @@ public class UplinkMessage
     public string? _ReceivedAt
     {
         get => ReceivedAt?.ToString("yyyy-MM-ddTHH:mm:ss.fffffffK");
-        set => ReceivedAt = value != null ? DateTime.Parse(value) : null;
+        set => ReceivedAt = value != null ? DateTimeOffset.Parse(value) : null;
     }
 
     /// <summary>

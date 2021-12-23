@@ -25,7 +25,7 @@ public class Message
     /// Timestamp at which the message has been received by the Application Server.
     /// </summary>
     [JsonIgnore]
-    public DateTime ReceivedAt { get; private set; }
+    public DateTimeOffset ReceivedAt { get; private set; }
 
     /// <summary>
     /// ISO 8601 UTC timestamp at which the message has been received by the Application Server.
@@ -34,7 +34,7 @@ public class Message
     public string _ReceivedAt
     {
         get => ReceivedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffffffK");
-        set => ReceivedAt = DateTime.Parse(value);
+        set => ReceivedAt = DateTimeOffset.Parse(value);
     }
 
     /// <summary>
