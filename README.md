@@ -67,12 +67,12 @@ Publish messages:
 await app[deviceID].PublishAsync(new Downlink {
     FPort = port,
     FrmPayload = new byte[] { 0x10, 0xF1 }
-});
+}, default(CancellationToken));
 // JSON payload
 await app[deviceID].PublishAsync(new Downlink {
     FPort = port,
     DecodedPayload = JsonSerializer.SerializeToElement(myObject)
-});
+}, default(CancellationToken));
 ```
 
 ### Managed
@@ -89,4 +89,19 @@ Use `StartAsync/StopAsync` instead of `ConnectAsync/DisconnectAsync`:
 
 ```csharp
 await app.StartAsync(cluster, port, withTls, username, apiKey, autoReconnectDelay);
+```
+
+Publish messages:
+
+```csharp
+// Raw payload
+await app[deviceID].PublishAsync(new Downlink {
+    FPort = port,
+    FrmPayload = new byte[] { 0x10, 0xF1 }
+});
+// JSON payload
+await app[deviceID].PublishAsync(new Downlink {
+    FPort = port,
+    DecodedPayload = JsonSerializer.SerializeToElement(myObject)
+});
 ```

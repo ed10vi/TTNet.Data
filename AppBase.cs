@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
+using MQTTnet.Client.Publishing;
 using MQTTnet.Client.Receiving;
 using MQTTnet.Extensions.ManagedClient;
 using TTNet.Data.Model;
@@ -229,6 +232,90 @@ public abstract class AppBase : DeviceHandler, IDisposable,
 
     Task ISynchronizingSubscriptionsFailedHandler.HandleSynchronizingSubscriptionsFailedAsync(ManagedProcessFailedEventArgs eventArgs) =>
         ExceptionThrowed?.InvokeAsync(this, eventArgs.Exception) ?? Task.CompletedTask;
+
+    /// <summary>
+    /// Unsupported. This must be called from a specific device.
+    /// </summary>
+    /// <exception cref="System.InvalidOperationException">Thrown always.</exception>
+    /// <returns>The publication result.</returns>
+    /// <param name="msg">Message.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="schedule">Schedule.</param>
+    public override Task<MqttClientPublishResult> PublishAsync(Message msg, CancellationToken cancellationToken, Schedule schedule) =>
+        throw new InvalidOperationException();
+
+    /// <summary>
+    /// Unsupported. This must be called from a specific device.
+    /// </summary>
+    /// <exception cref="System.InvalidOperationException">Thrown always.</exception>
+    /// <returns>The publication result.</returns>
+    /// <param name="msg">Message.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="schedule">Schedule.</param>
+    public override Task<MqttClientPublishResult> PublishAsync(Downlink msg, CancellationToken cancellationToken, Schedule schedule) =>
+        throw new InvalidOperationException();
+
+    /// <summary>
+    /// Unsupported. This must be called from a specific device.
+    /// </summary>
+    /// <exception cref="System.InvalidOperationException">Thrown always.</exception>
+    /// <returns>The publication result.</returns>
+    /// <param name="json">Message.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="schedule">Schedule.</param>
+    public override Task<MqttClientPublishResult> PublishAsync(string json, CancellationToken cancellationToken, Schedule schedule) =>
+        throw new InvalidOperationException();
+
+    /// <summary>
+    /// Unsupported. This must be called from a specific device.
+    /// </summary>
+    /// <exception cref="System.InvalidOperationException">Thrown always.</exception>
+    /// <returns>The publication result.</returns>
+    /// <param name="json">Message stream.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="schedule">Schedule.</param>
+    public override Task<MqttClientPublishResult> PublishAsync(Stream json, CancellationToken cancellationToken, Schedule schedule = Schedule.Push) =>
+        throw new InvalidOperationException();
+
+    /// <summary>
+    /// Unsupported. This must be called from a specific device.
+    /// </summary>
+    /// <exception cref="System.InvalidOperationException">Thrown always.</exception>
+    /// <returns>The publication ID.</returns>
+    /// <param name="msg">Message.</param>
+    /// <param name="schedule">Schedule.</param>
+    public override Task<Guid> PublishAsync(Message msg, Schedule schedule = Schedule.Push) =>
+        throw new InvalidOperationException();
+
+    /// <summary>
+    /// Unsupported. This must be called from a specific device.
+    /// </summary>
+    /// <exception cref="System.InvalidOperationException">Thrown always.</exception>
+    /// <returns>The publication ID.</returns>
+    /// <param name="msg">Message.</param>
+    /// <param name="schedule">Schedule.</param>
+    public override Task<Guid> PublishAsync(Downlink msg, Schedule schedule = Schedule.Push) =>
+        throw new InvalidOperationException();
+
+    /// <summary>
+    /// Unsupported. This must be called from a specific device.
+    /// </summary>
+    /// <exception cref="System.InvalidOperationException">Thrown always.</exception>
+    /// <returns>The publication ID.</returns>
+    /// <param name="json">Message.</param>
+    /// <param name="schedule">Schedule.</param>
+    public override Task<Guid> PublishAsync(string json, Schedule schedule = Schedule.Push) =>
+        throw new InvalidOperationException();
+
+    /// <summary>
+    /// Unsupported. This must be called from a specific device.
+    /// </summary>
+    /// <exception cref="System.InvalidOperationException">Thrown always.</exception>
+    /// <returns>The publication ID.</returns>
+    /// <param name="json">Message stream.</param>
+    /// <param name="schedule">Schedule.</param>
+    public override Task<Guid> PublishAsync(Stream json, Schedule schedule = Schedule.Push) =>
+        throw new InvalidOperationException();
 
     /// <summary>
     /// Dispose all resources used by this object
