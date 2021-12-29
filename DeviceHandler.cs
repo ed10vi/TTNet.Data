@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text.Json;
@@ -82,7 +83,7 @@ public class DeviceHandler
     }
 
     /// <summary>
-    /// Occurs when an downlink queued message is received.
+    /// Occurs when a downlink queued message is received.
     /// </summary>
     public event EventHandler<MessageReceivedEventArgs> DownQueued
     {
@@ -105,7 +106,7 @@ public class DeviceHandler
     }
 
     /// <summary>
-    /// Occurs when an downlink sent message is received.
+    /// Occurs when a downlink sent message is received.
     /// </summary>
     public event EventHandler<MessageReceivedEventArgs> DownSent
     {
@@ -128,7 +129,7 @@ public class DeviceHandler
     }
 
     /// <summary>
-    /// Occurs when an downlink ACK message is received.
+    /// Occurs when a downlink ACK message is received.
     /// </summary>
     public event EventHandler<MessageReceivedEventArgs> DownAck
     {
@@ -151,7 +152,7 @@ public class DeviceHandler
     }
 
     /// <summary>
-    /// Occurs when an downlink NACK message is received.
+    /// Occurs when a downlink NACK message is received.
     /// </summary>
     public event EventHandler<MessageReceivedEventArgs> DownNack
     {
@@ -174,7 +175,7 @@ public class DeviceHandler
     }
 
     /// <summary>
-    /// Occurs when an downlink failed message is received.
+    /// Occurs when a downlink failed message is received.
     /// </summary>
     public event EventHandler<MessageReceivedEventArgs> DownFailed
     {
@@ -332,14 +333,8 @@ public class DeviceHandler
     /// <param name="msg">Message.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <param name="schedule">Schedule.</param>
-    public virtual async Task<MqttClientPublishResult> PublishAsync(Message msg, CancellationToken cancellationToken, Schedule schedule = Schedule.Push)
-    {
-        using (var ms = new MemoryStream())
-        {
-            await JsonSerializer.SerializeAsync(ms, msg, SerializerOptions);
-            return await PublishAsync(ms, cancellationToken, schedule);
-        }
-    }
+    public virtual Task<MqttClientPublishResult> PublishAsync(Message msg, CancellationToken cancellationToken, Schedule schedule = Schedule.Push) =>
+        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(msg, SerializerOptions), cancellationToken, schedule);
 
     /// <summary>
     /// Send the specified message.
@@ -348,14 +343,8 @@ public class DeviceHandler
     /// <param name="msg">Message.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <param name="schedule">Schedule.</param>
-    public virtual async Task<MqttClientPublishResult> PublishAsync(Downlink msg, CancellationToken cancellationToken, Schedule schedule = Schedule.Push)
-    {
-        using (var ms = new MemoryStream())
-        {
-            await JsonSerializer.SerializeAsync(ms, new Message { Downlinks = new[] { msg } }, SerializerOptions);
-            return await PublishAsync(ms, cancellationToken, schedule);
-        }
-    }
+    public virtual Task<MqttClientPublishResult> PublishAsync(Downlink msg, CancellationToken cancellationToken, Schedule schedule = Schedule.Push) =>
+        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(new Message { Downlinks = new[] { msg } }, SerializerOptions), cancellationToken, schedule);
 
     /// <summary>
     /// Send the specified message.
@@ -369,7 +358,7 @@ public class DeviceHandler
         if (MqttClient == null)
             throw new InvalidOperationException("This is a managed instance. Use PublishAsync(msg, schedule).");
         var pubMsg = new MqttApplicationMessageBuilder()
-            .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>()}")
+            .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
             .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
             .WithPayload(json)
             .WithAtMostOnceQoS()
@@ -389,7 +378,27 @@ public class DeviceHandler
         if (MqttClient == null)
             throw new InvalidOperationException("This is a managed instance. Use PublishAsync(msg, schedule).");
         var pubMsg = new MqttApplicationMessageBuilder()
-            .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>()}")
+            .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
+            .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
+            .WithPayload(json)
+            .WithAtMostOnceQoS()
+            .Build();
+        return MqttClient.PublishAsync(pubMsg, cancellationToken);
+    }
+
+    /// <summary>
+    /// Send the specified message.
+    /// </summary>
+    /// <returns>The publication result.</returns>
+    /// <param name="json">Message bytes.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="schedule">Schedule.</param>
+    public virtual Task<MqttClientPublishResult> PublishAsync(IEnumerable<byte> json, CancellationToken cancellationToken, Schedule schedule = Schedule.Push)
+    {
+        if (MqttClient == null)
+            throw new InvalidOperationException("This is a managed instance. Use PublishAsync(msg, schedule).");
+        var pubMsg = new MqttApplicationMessageBuilder()
+            .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
             .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
             .WithPayload(json)
             .WithAtMostOnceQoS()
@@ -403,14 +412,8 @@ public class DeviceHandler
     /// <returns>The publication ID.</returns>
     /// <param name="msg">Message.</param>
     /// <param name="schedule">Schedule.</param>
-    public virtual async Task<Guid> PublishAsync(Message msg, Schedule schedule = Schedule.Push)
-    {
-        using (var ms = new MemoryStream())
-        {
-            await JsonSerializer.SerializeAsync(ms, msg, SerializerOptions);
-            return await PublishAsync(ms, schedule);
-        }
-    }
+    public virtual Task<Guid> PublishAsync(Message msg, Schedule schedule = Schedule.Push) =>
+        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(msg, SerializerOptions), schedule);
 
     /// <summary>
     /// Send the specified message.
@@ -418,14 +421,8 @@ public class DeviceHandler
     /// <returns>The publication ID.</returns>
     /// <param name="msg">Message.</param>
     /// <param name="schedule">Schedule.</param>
-    public virtual async Task<Guid> PublishAsync(Downlink msg, Schedule schedule = Schedule.Push)
-    {
-        using (var ms = new MemoryStream())
-        {
-            await JsonSerializer.SerializeAsync(ms, new Message { Downlinks = new[] { msg } }, SerializerOptions);
-            return await PublishAsync(ms, schedule);
-        }
-    }
+    public virtual Task<Guid> PublishAsync(Downlink msg, Schedule schedule = Schedule.Push) =>
+        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(new Message { Downlinks = new[] { msg } }, SerializerOptions), schedule);
 
     /// <summary>
     /// Send the specified message.
@@ -439,7 +436,7 @@ public class DeviceHandler
             throw new InvalidOperationException("This is an unmanaged instance. Use PublishAsync(msg, default(CancellationToken), schedule).");
         var pubMsg = new ManagedMqttApplicationMessageBuilder()
             .WithApplicationMessage(builder => builder
-                .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>()}")
+                .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
                 .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
                 .WithPayload(json)
                 .WithAtMostOnceQoS()
@@ -461,7 +458,29 @@ public class DeviceHandler
             throw new InvalidOperationException("This is an unmanaged instance. Use PublishAsync(msg, default(CancellationToken), schedule).");
         var pubMsg = new ManagedMqttApplicationMessageBuilder()
             .WithApplicationMessage(builder => builder
-                .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>()}")
+                .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
+                .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
+                .WithPayload(json)
+                .WithAtMostOnceQoS()
+            )
+            .Build();
+        await ManagedMqttClient.PublishAsync(pubMsg);
+        return pubMsg.Id;
+    }
+
+    /// <summary>
+    /// Send the specified message.
+    /// </summary>
+    /// <returns>The publication ID.</returns>
+    /// <param name="json">Message bytes.</param>
+    /// <param name="schedule">Schedule.</param>
+    public virtual async Task<Guid> PublishAsync(IEnumerable<byte> json, Schedule schedule = Schedule.Push)
+    {
+        if (ManagedMqttClient == null)
+            throw new InvalidOperationException("This is an unmanaged instance. Use PublishAsync(msg, default(CancellationToken), schedule).");
+        var pubMsg = new ManagedMqttApplicationMessageBuilder()
+            .WithApplicationMessage(builder => builder
+                .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
                 .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
                 .WithPayload(json)
                 .WithAtMostOnceQoS()
