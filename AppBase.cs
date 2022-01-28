@@ -32,7 +32,7 @@ public abstract class AppBase : DeviceHandler, IDisposable,
     /// </summary>
     public string ClientID { get; init; }
 
-    private Dictionary<string, DeviceHandler> DeviceHandlers;
+    private Dictionary<string, DeviceHandler> _deviceHandlers;
 
     /// <summary>
     /// Application identifier.
@@ -59,17 +59,17 @@ public abstract class AppBase : DeviceHandler, IDisposable,
         get
         {
             DeviceHandler result;
-            if (DeviceHandlers.ContainsKey(deviceId))
-                result = DeviceHandlers[deviceId];
+            if (_deviceHandlers.ContainsKey(deviceId))
+                result = _deviceHandlers[deviceId];
             else
             {
-                if (MqttClient != null)
-                    result = new DeviceHandler(MqttClient, deviceId, AppID, TenantID);
-                else if (ManagedMqttClient != null)
-                    result = new DeviceHandler(ManagedMqttClient, deviceId, AppID, TenantID);
+                if (_mqttClient != null)
+                    result = new DeviceHandler(_mqttClient, deviceId, AppID, TenantID);
+                else if (_managedMqttClient != null)
+                    result = new DeviceHandler(_managedMqttClient, deviceId, AppID, TenantID);
                 else
                     throw new Exception();
-                DeviceHandlers.Add(deviceId, result);
+                _deviceHandlers.Add(deviceId, result);
             }
             return result;
         }
@@ -107,7 +107,7 @@ public abstract class AppBase : DeviceHandler, IDisposable,
         AppID = appId;
         TenantID = tenantId;
         ClientID = Guid.NewGuid().ToString();
-        DeviceHandlers = new Dictionary<string, DeviceHandler>();
+        _deviceHandlers = new Dictionary<string, DeviceHandler>();
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public abstract class AppBase : DeviceHandler, IDisposable,
         AppID = appId;
         TenantID = tenantId;
         ClientID = Guid.NewGuid().ToString();
-        DeviceHandlers = new Dictionary<string, DeviceHandler>();
+        _deviceHandlers = new Dictionary<string, DeviceHandler>();
     }
 
     async Task IMqttApplicationMessageReceivedHandler.HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs e)
@@ -133,7 +133,7 @@ public abstract class AppBase : DeviceHandler, IDisposable,
         // Parse the message and raise the corresponding event
         try
         {
-            msg = JsonSerializer.Deserialize<Message>(e.ApplicationMessage.Payload, SerializerOptions);
+            msg = JsonSerializer.Deserialize<Message>(e.ApplicationMessage.Payload, _serializerOptions);
             //msg = JsonDocument.Parse(e.ApplicationMessage.Payload, DocumentOptions).RootElement.ConvertTo<Message>();
             if (msg == null)
                 throw new JsonException("JsonSerializer returned null");
@@ -141,59 +141,59 @@ public abstract class AppBase : DeviceHandler, IDisposable,
             switch (topic[4])
             {
                 case "join":
-                    JoinField?.Invoke(this, eventArgs);
-                    if (DeviceHandlers.ContainsKey(topic[3]))
-                        DeviceHandlers[topic[3]].JoinField?.Invoke(this, eventArgs);
+                    _join?.Invoke(this, eventArgs);
+                    if (_deviceHandlers.ContainsKey(topic[3]))
+                        _deviceHandlers[topic[3]]._join?.Invoke(this, eventArgs);
                     break;
                 case "up":
-                    UpField?.Invoke(this, eventArgs);
-                    if (DeviceHandlers.ContainsKey(topic[3]))
-                        DeviceHandlers[topic[3]].UpField?.Invoke(this, eventArgs);
+                    _up?.Invoke(this, eventArgs);
+                    if (_deviceHandlers.ContainsKey(topic[3]))
+                        _deviceHandlers[topic[3]]._up?.Invoke(this, eventArgs);
                     break;
                 case "down":
                     switch (topic[5])
                     {
                         case "queued":
-                            DownQueuedField?.Invoke(this, eventArgs);
-                            if (DeviceHandlers.ContainsKey(topic[3]))
-                                DeviceHandlers[topic[3]].DownQueuedField?.Invoke(this, eventArgs);
+                            _downQueued?.Invoke(this, eventArgs);
+                            if (_deviceHandlers.ContainsKey(topic[3]))
+                                _deviceHandlers[topic[3]]._downQueued?.Invoke(this, eventArgs);
                             break;
                         case "sent":
-                            DownSentField?.Invoke(this, eventArgs);
-                            if (DeviceHandlers.ContainsKey(topic[3]))
-                                DeviceHandlers[topic[3]].DownSentField?.Invoke(this, eventArgs);
+                            _downSent?.Invoke(this, eventArgs);
+                            if (_deviceHandlers.ContainsKey(topic[3]))
+                                _deviceHandlers[topic[3]]._downSent?.Invoke(this, eventArgs);
                             break;
                         case "ack":
-                            DownAckField?.Invoke(this, eventArgs);
-                            if (DeviceHandlers.ContainsKey(topic[3]))
-                                DeviceHandlers[topic[3]].DownAckField?.Invoke(this, eventArgs);
+                            _downAck?.Invoke(this, eventArgs);
+                            if (_deviceHandlers.ContainsKey(topic[3]))
+                                _deviceHandlers[topic[3]]._downAck?.Invoke(this, eventArgs);
                             break;
                         case "nack":
-                            DownNackField?.Invoke(this, eventArgs);
-                            if (DeviceHandlers.ContainsKey(topic[3]))
-                                DeviceHandlers[topic[3]].DownNackField?.Invoke(this, eventArgs);
+                            _downNack?.Invoke(this, eventArgs);
+                            if (_deviceHandlers.ContainsKey(topic[3]))
+                                _deviceHandlers[topic[3]]._downNack?.Invoke(this, eventArgs);
                             break;
                         case "failed":
-                            DownFailedField?.Invoke(this, eventArgs);
-                            if (DeviceHandlers.ContainsKey(topic[3]))
-                                DeviceHandlers[topic[3]].DownFailedField?.Invoke(this, eventArgs);
+                            _downFailed?.Invoke(this, eventArgs);
+                            if (_deviceHandlers.ContainsKey(topic[3]))
+                                _deviceHandlers[topic[3]]._downFailed?.Invoke(this, eventArgs);
                             break;
                     }
                     break;
                 case "service":
                     if (topic[5] == "data")
                     {
-                        ServiceDataField?.Invoke(this, eventArgs);
-                        if (DeviceHandlers.ContainsKey(topic[3]))
-                            DeviceHandlers[topic[3]].ServiceDataField?.Invoke(this, eventArgs);
+                        _serviceData?.Invoke(this, eventArgs);
+                        if (_deviceHandlers.ContainsKey(topic[3]))
+                            _deviceHandlers[topic[3]]._serviceData?.Invoke(this, eventArgs);
                     }
                     break;
                 case "location":
                     if (topic[5] == "solved")
                     {
-                        LocationSolvedField?.Invoke(this, eventArgs);
-                        if (DeviceHandlers.ContainsKey(topic[3]))
-                            DeviceHandlers[topic[3]].LocationSolvedField?.Invoke(this, eventArgs);
+                        _locationSolved?.Invoke(this, eventArgs);
+                        if (_deviceHandlers.ContainsKey(topic[3]))
+                            _deviceHandlers[topic[3]]._locationSolved?.Invoke(this, eventArgs);
                     }
                     break;
             }
@@ -211,7 +211,7 @@ public abstract class AppBase : DeviceHandler, IDisposable,
         if (eventArgs.ConnectResult.ResultCode == MqttClientConnectResultCode.Success)
         {
             await SubscribeAsync();
-            foreach (var d in DeviceHandlers.Values)
+            foreach (DeviceHandler d in _deviceHandlers.Values)
                 await d.SubscribeAsync();
         }
         if (Connected != null)

@@ -11,20 +11,17 @@ namespace TTNet.Data;
 /// </summary>
 public class ManagedApp : AppBase
 {
-    private new IManagedMqttClient ManagedMqttClient => base.ManagedMqttClient!;
+    private new IManagedMqttClient _managedMqttClient => base._managedMqttClient!;
 
     /// <summary>
     /// Value indicating whether this <see cref="T:TTNet.Data.ManagedApp"/> is connected.
     /// </summary>
-    public override bool IsConnected => ManagedMqttClient.IsConnected == true;
+    public override bool IsConnected => _managedMqttClient.IsConnected == true;
 
     /// <summary>
     /// Count of pending messages to send.
     /// </summary>
-    public int PendingMessagesCount
-    {
-        get => ManagedMqttClient.PendingApplicationMessagesCount;
-    }
+    public int PendingMessagesCount => _managedMqttClient.PendingApplicationMessagesCount;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="T:TTNet.Data.ManagedApp"/> class.
@@ -33,14 +30,14 @@ public class ManagedApp : AppBase
     /// <param name="tenantId">Tenant identifier. Use null for The Things Stack Open Source deployment.</param>
     public ManagedApp(string appId, string? tenantId = "ttn") : base(new MqttFactory().CreateManagedMqttClient(), appId, tenantId)
     {
-        ManagedMqttClient.ConnectedHandler = this;
-        ManagedMqttClient.DisconnectedHandler = this;
-        ManagedMqttClient.ApplicationMessageReceivedHandler = this;
+        _managedMqttClient.ConnectedHandler = this;
+        _managedMqttClient.DisconnectedHandler = this;
+        _managedMqttClient.ApplicationMessageReceivedHandler = this;
 
-        ManagedMqttClient.ApplicationMessageProcessedHandler = this;
-        ManagedMqttClient.ApplicationMessageSkippedHandler = this;
-        ManagedMqttClient.ConnectingFailedHandler = this;
-        ManagedMqttClient.SynchronizingSubscriptionsFailedHandler = this;
+        _managedMqttClient.ApplicationMessageProcessedHandler = this;
+        _managedMqttClient.ApplicationMessageSkippedHandler = this;
+        _managedMqttClient.ConnectingFailedHandler = this;
+        _managedMqttClient.SynchronizingSubscriptionsFailedHandler = this;
     }
 
     /// <summary>
@@ -53,7 +50,7 @@ public class ManagedApp : AppBase
     /// <param name="apiKey">API access key.</param>
     /// <param name="autoReconnectDelay">Time to wait after a disconnection to reconnect.</param>
     public Task StartAsync(string server, int port, bool withTls, string username, string apiKey, TimeSpan autoReconnectDelay) =>
-        ManagedMqttClient.StartAsync(new ManagedMqttClientOptionsBuilder()
+        _managedMqttClient.StartAsync(new ManagedMqttClientOptionsBuilder()
             .WithAutoReconnectDelay(autoReconnectDelay)
             .WithClientOptions(GetMqttClientOptions(server, port, withTls, username, apiKey))
             .Build());
@@ -61,7 +58,7 @@ public class ManagedApp : AppBase
     /// <summary>
     /// Stop connection.
     /// </summary>
-    public Task StopAsync() => ManagedMqttClient.StopAsync();
+    public Task StopAsync() => _managedMqttClient.StopAsync();
 
     private IMqttClientOptions GetMqttClientOptions(string server, int port, bool withTls, string username, string apiKey)
     {
@@ -76,5 +73,5 @@ public class ManagedApp : AppBase
     /// <summary>
     /// Dispose all resources used by this object
     /// </summary>
-    public override void Dispose() => ManagedMqttClient.Dispose();
+    public override void Dispose() => _managedMqttClient.Dispose();
 }

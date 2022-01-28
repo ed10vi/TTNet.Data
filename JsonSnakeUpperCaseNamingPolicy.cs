@@ -8,7 +8,7 @@ namespace TTNet.Data;
 /// </summary>
 public class JsonSnakeUpperCaseNamingPolicy : JsonNamingPolicy
 {
-    private const string Separator = "_";
+    private const string _separator = "_";
 
     /// <summary>
     /// Converts the specified name to snake uppercase
@@ -22,7 +22,7 @@ public class JsonSnakeUpperCaseNamingPolicy : JsonNamingPolicy
             if (char.IsUpper(name[i]))
             {
                 if (i > 0 && !char.IsUpper(name[i - 1]))
-                    result.Append(Separator);
+                    result.Append(_separator);
                 result.Append(name[i]);
             }
             else

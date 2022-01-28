@@ -20,21 +20,21 @@ namespace TTNet.Data;
 /// </summary>
 public class DeviceHandler
 {
-    private protected IMqttClient? MqttClient { get; init; }
-    private protected IManagedMqttClient? ManagedMqttClient { get; init; }
-    private readonly string TopicBase;
-    private protected JsonSerializerOptions SerializerOptions { get; init; }
+    private protected IMqttClient? _mqttClient { get; init; }
+    private protected IManagedMqttClient? _managedMqttClient { get; init; }
+    private readonly string _topicBase;
+    private protected JsonSerializerOptions _serializerOptions { get; init; }
 
     #region Events
-    internal EventHandler<MessageReceivedEventArgs>? JoinField;
-    internal EventHandler<MessageReceivedEventArgs>? UpField;
-    internal EventHandler<MessageReceivedEventArgs>? DownQueuedField;
-    internal EventHandler<MessageReceivedEventArgs>? DownSentField;
-    internal EventHandler<MessageReceivedEventArgs>? DownAckField;
-    internal EventHandler<MessageReceivedEventArgs>? DownNackField;
-    internal EventHandler<MessageReceivedEventArgs>? DownFailedField;
-    internal EventHandler<MessageReceivedEventArgs>? ServiceDataField;
-    internal EventHandler<MessageReceivedEventArgs>? LocationSolvedField;
+    internal EventHandler<MessageReceivedEventArgs>? _join;
+    internal EventHandler<MessageReceivedEventArgs>? _up;
+    internal EventHandler<MessageReceivedEventArgs>? _downQueued;
+    internal EventHandler<MessageReceivedEventArgs>? _downSent;
+    internal EventHandler<MessageReceivedEventArgs>? _downAck;
+    internal EventHandler<MessageReceivedEventArgs>? _downNack;
+    internal EventHandler<MessageReceivedEventArgs>? _downFailed;
+    internal EventHandler<MessageReceivedEventArgs>? _serviceData;
+    internal EventHandler<MessageReceivedEventArgs>? _locationSolved;
 
     /// <summary>
     /// Occurs when a join-accept message is received.
@@ -43,19 +43,19 @@ public class DeviceHandler
     {
         add
         {
-            var list = JoinField?.GetInvocationList();
+            var list = _join?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await SubscribeAsync($"{TopicBase}/join"));
-            JoinField += value;
+                    await SubscribeAsync($"{_topicBase}/join"));
+            _join += value;
         }
         remove
         {
-            JoinField -= value;
-            var list = JoinField?.GetInvocationList();
+            _join -= value;
+            var list = _join?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await UnsubscribeAsync($"{TopicBase}/join"));
+                    await UnsubscribeAsync($"{_topicBase}/join"));
         }
     }
 
@@ -66,19 +66,19 @@ public class DeviceHandler
     {
         add
         {
-            var list = UpField?.GetInvocationList();
+            var list = _up?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await SubscribeAsync($"{TopicBase}/up"));
-            UpField += value;
+                    await SubscribeAsync($"{_topicBase}/up"));
+            _up += value;
         }
         remove
         {
-            UpField -= value;
-            var list = UpField?.GetInvocationList();
+            _up -= value;
+            var list = _up?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await UnsubscribeAsync($"{TopicBase}/up"));
+                    await UnsubscribeAsync($"{_topicBase}/up"));
         }
     }
 
@@ -89,19 +89,19 @@ public class DeviceHandler
     {
         add
         {
-            var list = DownQueuedField?.GetInvocationList();
+            var list = _downQueued?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await SubscribeAsync($"{TopicBase}/down/queued"));
-            DownQueuedField += value;
+                    await SubscribeAsync($"{_topicBase}/down/queued"));
+            _downQueued += value;
         }
         remove
         {
-            DownQueuedField -= value;
-            var list = DownQueuedField?.GetInvocationList();
+            _downQueued -= value;
+            var list = _downQueued?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await UnsubscribeAsync($"{TopicBase}/down/queued"));
+                    await UnsubscribeAsync($"{_topicBase}/down/queued"));
         }
     }
 
@@ -112,19 +112,19 @@ public class DeviceHandler
     {
         add
         {
-            var list = DownSentField?.GetInvocationList();
+            var list = _downSent?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await SubscribeAsync($"{TopicBase}/down/sent"));
-            DownSentField += value;
+                    await SubscribeAsync($"{_topicBase}/down/sent"));
+            _downSent += value;
         }
         remove
         {
-            DownSentField -= value;
-            var list = DownSentField?.GetInvocationList();
+            _downSent -= value;
+            var list = _downSent?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await UnsubscribeAsync($"{TopicBase}/down/sent"));
+                    await UnsubscribeAsync($"{_topicBase}/down/sent"));
         }
     }
 
@@ -135,19 +135,19 @@ public class DeviceHandler
     {
         add
         {
-            var list = DownAckField?.GetInvocationList();
+            var list = _downAck?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await SubscribeAsync($"{TopicBase}/down/ack"));
-            DownAckField += value;
+                    await SubscribeAsync($"{_topicBase}/down/ack"));
+            _downAck += value;
         }
         remove
         {
-            DownAckField -= value;
-            var list = DownAckField?.GetInvocationList();
+            _downAck -= value;
+            var list = _downAck?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await UnsubscribeAsync($"{TopicBase}/down/ack"));
+                    await UnsubscribeAsync($"{_topicBase}/down/ack"));
         }
     }
 
@@ -158,19 +158,19 @@ public class DeviceHandler
     {
         add
         {
-            var list = DownNackField?.GetInvocationList();
+            var list = _downNack?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await SubscribeAsync($"{TopicBase}/down/nack"));
-            DownNackField += value;
+                    await SubscribeAsync($"{_topicBase}/down/nack"));
+            _downNack += value;
         }
         remove
         {
-            DownNackField -= value;
-            var list = DownNackField?.GetInvocationList();
+            _downNack -= value;
+            var list = _downNack?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await UnsubscribeAsync($"{TopicBase}/down/nack"));
+                    await UnsubscribeAsync($"{_topicBase}/down/nack"));
         }
     }
 
@@ -181,19 +181,19 @@ public class DeviceHandler
     {
         add
         {
-            var list = DownFailedField?.GetInvocationList();
+            var list = _downFailed?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await SubscribeAsync($"{TopicBase}/down/failed"));
-            DownFailedField += value;
+                    await SubscribeAsync($"{_topicBase}/down/failed"));
+            _downFailed += value;
         }
         remove
         {
-            DownFailedField -= value;
-            var list = DownFailedField?.GetInvocationList();
+            _downFailed -= value;
+            var list = _downFailed?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await UnsubscribeAsync($"{TopicBase}/down/failed"));
+                    await UnsubscribeAsync($"{_topicBase}/down/failed"));
         }
     }
 
@@ -204,19 +204,19 @@ public class DeviceHandler
     {
         add
         {
-            var list = ServiceDataField?.GetInvocationList();
+            var list = _serviceData?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await SubscribeAsync($"{TopicBase}/service/data"));
-            ServiceDataField += value;
+                    await SubscribeAsync($"{_topicBase}/service/data"));
+            _serviceData += value;
         }
         remove
         {
-            ServiceDataField -= value;
-            var list = ServiceDataField?.GetInvocationList();
+            _serviceData -= value;
+            var list = _serviceData?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await UnsubscribeAsync($"{TopicBase}/service/data"));
+                    await UnsubscribeAsync($"{_topicBase}/service/data"));
         }
     }
 
@@ -227,27 +227,27 @@ public class DeviceHandler
     {
         add
         {
-            var list = LocationSolvedField?.GetInvocationList();
+            var list = _locationSolved?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await SubscribeAsync($"{TopicBase}/location/solved"));
-            LocationSolvedField += value;
+                    await SubscribeAsync($"{_topicBase}/location/solved"));
+            _locationSolved += value;
         }
         remove
         {
-            LocationSolvedField -= value;
-            var list = LocationSolvedField?.GetInvocationList();
+            _locationSolved -= value;
+            var list = _locationSolved?.GetInvocationList();
             if (list == null || list.Length == 0)
                 Task.Run(async () =>
-                    await UnsubscribeAsync($"{TopicBase}/location/solved"));
+                    await UnsubscribeAsync($"{_topicBase}/location/solved"));
         }
     }
     #endregion
 
     private DeviceHandler(string deviceId, string appId, string? tenantId)
     {
-        TopicBase = tenantId != null ? $"v3/{appId}@{tenantId}/devices/{deviceId}" : $"v3/{appId}/devices/{deviceId}";
-        SerializerOptions = new JsonSerializerOptions
+        _topicBase = tenantId != null ? $"v3/{appId}@{tenantId}/devices/{deviceId}" : $"v3/{appId}/devices/{deviceId}";
+        _serializerOptions = new JsonSerializerOptions
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             Converters = { new JsonStringEnumConverter(new JsonSnakeUpperCaseNamingPolicy()) }
@@ -263,7 +263,7 @@ public class DeviceHandler
     /// <param name="tenantId">Tenant identifier. Use null for The Things Stack Open Source deployment.</param>
     public DeviceHandler(IMqttClient mqttClient, string deviceId, string appId, string? tenantId = "ttn") : this(deviceId, appId, tenantId)
     {
-        MqttClient = mqttClient;
+        _mqttClient = mqttClient;
     }
 
     /// <summary>
@@ -275,7 +275,7 @@ public class DeviceHandler
     /// <param name="tenantId">Tenant identifier. Use null for The Things Stack Open Source deployment.</param>
     public DeviceHandler(IManagedMqttClient mqttClient, string deviceId, string appId, string? tenantId = "ttn") : this(deviceId, appId, tenantId)
     {
-        ManagedMqttClient = mqttClient;
+        _managedMqttClient = mqttClient;
     }
 
     /// <summary>
@@ -285,43 +285,43 @@ public class DeviceHandler
     {
         Delegate[]? list;
 
-        if (MqttClient?.IsConnected == true)
+        if (_mqttClient?.IsConnected == true)
         {
-            list = JoinField?.GetInvocationList();
+            list = _join?.GetInvocationList();
             if (list != null && list.Length > 0)
-                await SubscribeAsync($"{TopicBase}/join");
+                await SubscribeAsync($"{_topicBase}/join");
 
-            list = UpField?.GetInvocationList();
+            list = _up?.GetInvocationList();
             if (list != null && list.Length > 0)
-                await SubscribeAsync($"{TopicBase}/up");
+                await SubscribeAsync($"{_topicBase}/up");
 
-            list = DownQueuedField?.GetInvocationList();
+            list = _downQueued?.GetInvocationList();
             if (list != null && list.Length > 0)
-                await SubscribeAsync($"{TopicBase}/down/queued");
+                await SubscribeAsync($"{_topicBase}/down/queued");
 
-            list = DownSentField?.GetInvocationList();
+            list = _downSent?.GetInvocationList();
             if (list != null && list.Length > 0)
-                await SubscribeAsync($"{TopicBase}/down/sent");
+                await SubscribeAsync($"{_topicBase}/down/sent");
 
-            list = DownAckField?.GetInvocationList();
+            list = _downAck?.GetInvocationList();
             if (list != null && list.Length > 0)
-                await SubscribeAsync($"{TopicBase}/down/ack");
+                await SubscribeAsync($"{_topicBase}/down/ack");
 
-            list = DownNackField?.GetInvocationList();
+            list = _downNack?.GetInvocationList();
             if (list != null && list.Length > 0)
-                await SubscribeAsync($"{TopicBase}/down/nack");
+                await SubscribeAsync($"{_topicBase}/down/nack");
 
-            list = DownFailedField?.GetInvocationList();
+            list = _downFailed?.GetInvocationList();
             if (list != null && list.Length > 0)
-                await SubscribeAsync($"{TopicBase}/down/failed");
+                await SubscribeAsync($"{_topicBase}/down/failed");
 
-            list = ServiceDataField?.GetInvocationList();
+            list = _serviceData?.GetInvocationList();
             if (list != null && list.Length > 0)
-                await SubscribeAsync($"{TopicBase}/service/data");
+                await SubscribeAsync($"{_topicBase}/service/data");
 
-            list = LocationSolvedField?.GetInvocationList();
+            list = _locationSolved?.GetInvocationList();
             if (list != null && list.Length > 0)
-                await SubscribeAsync($"{TopicBase}/location/solved");
+                await SubscribeAsync($"{_topicBase}/location/solved");
         }
     }
 
@@ -334,7 +334,7 @@ public class DeviceHandler
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <param name="schedule">Schedule.</param>
     public virtual Task<MqttClientPublishResult> PublishAsync(Message msg, CancellationToken cancellationToken, Schedule schedule = Schedule.Push) =>
-        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(msg, SerializerOptions), cancellationToken, schedule);
+        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(msg, _serializerOptions), cancellationToken, schedule);
 
     /// <summary>
     /// Send the specified message.
@@ -344,7 +344,7 @@ public class DeviceHandler
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <param name="schedule">Schedule.</param>
     public virtual Task<MqttClientPublishResult> PublishAsync(Downlink msg, CancellationToken cancellationToken, Schedule schedule = Schedule.Push) =>
-        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(new Message { Downlinks = new[] { msg } }, SerializerOptions), cancellationToken, schedule);
+        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(new Message { Downlinks = new[] { msg } }, _serializerOptions), cancellationToken, schedule);
 
     /// <summary>
     /// Send the specified message.
@@ -355,15 +355,15 @@ public class DeviceHandler
     /// <param name="schedule">Schedule.</param>
     public virtual Task<MqttClientPublishResult> PublishAsync(string json, CancellationToken cancellationToken, Schedule schedule = Schedule.Push)
     {
-        if (MqttClient == null)
+        if (_mqttClient == null)
             throw new InvalidOperationException("This is a managed instance. Use PublishAsync(msg, schedule).");
         var pubMsg = new MqttApplicationMessageBuilder()
-            .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
+            .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
             .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
             .WithPayload(json)
             .WithAtMostOnceQoS()
             .Build();
-        return MqttClient.PublishAsync(pubMsg, cancellationToken);
+        return _mqttClient.PublishAsync(pubMsg, cancellationToken);
     }
 
     /// <summary>
@@ -375,15 +375,15 @@ public class DeviceHandler
     /// <param name="schedule">Schedule.</param>
     public virtual Task<MqttClientPublishResult> PublishAsync(Stream json, CancellationToken cancellationToken, Schedule schedule = Schedule.Push)
     {
-        if (MqttClient == null)
+        if (_mqttClient == null)
             throw new InvalidOperationException("This is a managed instance. Use PublishAsync(msg, schedule).");
         var pubMsg = new MqttApplicationMessageBuilder()
-            .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
+            .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
             .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
             .WithPayload(json)
             .WithAtMostOnceQoS()
             .Build();
-        return MqttClient.PublishAsync(pubMsg, cancellationToken);
+        return _mqttClient.PublishAsync(pubMsg, cancellationToken);
     }
 
     /// <summary>
@@ -395,15 +395,15 @@ public class DeviceHandler
     /// <param name="schedule">Schedule.</param>
     public virtual Task<MqttClientPublishResult> PublishAsync(IEnumerable<byte> json, CancellationToken cancellationToken, Schedule schedule = Schedule.Push)
     {
-        if (MqttClient == null)
+        if (_mqttClient == null)
             throw new InvalidOperationException("This is a managed instance. Use PublishAsync(msg, schedule).");
         var pubMsg = new MqttApplicationMessageBuilder()
-            .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
+            .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
             .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
             .WithPayload(json)
             .WithAtMostOnceQoS()
             .Build();
-        return MqttClient.PublishAsync(pubMsg, cancellationToken);
+        return _mqttClient.PublishAsync(pubMsg, cancellationToken);
     }
 
     /// <summary>
@@ -413,7 +413,7 @@ public class DeviceHandler
     /// <param name="msg">Message.</param>
     /// <param name="schedule">Schedule.</param>
     public virtual Task<Guid> PublishAsync(Message msg, Schedule schedule = Schedule.Push) =>
-        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(msg, SerializerOptions), schedule);
+        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(msg, _serializerOptions), schedule);
 
     /// <summary>
     /// Send the specified message.
@@ -422,7 +422,7 @@ public class DeviceHandler
     /// <param name="msg">Message.</param>
     /// <param name="schedule">Schedule.</param>
     public virtual Task<Guid> PublishAsync(Downlink msg, Schedule schedule = Schedule.Push) =>
-        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(new Message { Downlinks = new[] { msg } }, SerializerOptions), schedule);
+        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(new Message { Downlinks = new[] { msg } }, _serializerOptions), schedule);
 
     /// <summary>
     /// Send the specified message.
@@ -432,17 +432,17 @@ public class DeviceHandler
     /// <param name="schedule">Schedule.</param>
     public virtual async Task<Guid> PublishAsync(string json, Schedule schedule = Schedule.Push)
     {
-        if (ManagedMqttClient == null)
+        if (_managedMqttClient == null)
             throw new InvalidOperationException("This is an unmanaged instance. Use PublishAsync(msg, default(CancellationToken), schedule).");
         var pubMsg = new ManagedMqttApplicationMessageBuilder()
             .WithApplicationMessage(builder => builder
-                .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
+                .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
                 .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
                 .WithPayload(json)
                 .WithAtMostOnceQoS()
             )
             .Build();
-        await ManagedMqttClient.PublishAsync(pubMsg);
+        await _managedMqttClient.PublishAsync(pubMsg);
         return pubMsg.Id;
     }
 
@@ -454,17 +454,17 @@ public class DeviceHandler
     /// <param name="schedule">Schedule.</param>
     public virtual async Task<Guid> PublishAsync(Stream json, Schedule schedule = Schedule.Push)
     {
-        if (ManagedMqttClient == null)
+        if (_managedMqttClient == null)
             throw new InvalidOperationException("This is an unmanaged instance. Use PublishAsync(msg, default(CancellationToken), schedule).");
         var pubMsg = new ManagedMqttApplicationMessageBuilder()
             .WithApplicationMessage(builder => builder
-                .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
+                .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
                 .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
                 .WithPayload(json)
                 .WithAtMostOnceQoS()
             )
             .Build();
-        await ManagedMqttClient.PublishAsync(pubMsg);
+        await _managedMqttClient.PublishAsync(pubMsg);
         return pubMsg.Id;
     }
 
@@ -476,44 +476,44 @@ public class DeviceHandler
     /// <param name="schedule">Schedule.</param>
     public virtual async Task<Guid> PublishAsync(IEnumerable<byte> json, Schedule schedule = Schedule.Push)
     {
-        if (ManagedMqttClient == null)
+        if (_managedMqttClient == null)
             throw new InvalidOperationException("This is an unmanaged instance. Use PublishAsync(msg, default(CancellationToken), schedule).");
         var pubMsg = new ManagedMqttApplicationMessageBuilder()
             .WithApplicationMessage(builder => builder
-                .WithTopic($"{TopicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
+                .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
                 .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
                 .WithPayload(json)
                 .WithAtMostOnceQoS()
             )
             .Build();
-        await ManagedMqttClient.PublishAsync(pubMsg);
+        await _managedMqttClient.PublishAsync(pubMsg);
         return pubMsg.Id;
     }
     #endregion
 
     private async Task SubscribeAsync(string topic)
     {
-        if (MqttClient != null)
+        if (_mqttClient != null)
         {
-            if (MqttClient.IsConnected)
-                await MqttClient.SubscribeAsync(topic);
+            if (_mqttClient.IsConnected)
+                await _mqttClient.SubscribeAsync(topic);
         }
-        else if (ManagedMqttClient != null)
+        else if (_managedMqttClient != null)
         {
-            await ManagedMqttClient.SubscribeAsync(topic);
+            await _managedMqttClient.SubscribeAsync(topic);
         }
     }
 
     private async Task UnsubscribeAsync(string topic)
     {
-        if (MqttClient != null)
+        if (_mqttClient != null)
         {
-            if (MqttClient.IsConnected)
-                await MqttClient.UnsubscribeAsync(topic);
+            if (_mqttClient.IsConnected)
+                await _mqttClient.UnsubscribeAsync(topic);
         }
-        else if (ManagedMqttClient != null)
+        else if (_managedMqttClient != null)
         {
-            await ManagedMqttClient.UnsubscribeAsync(topic);
+            await _managedMqttClient.UnsubscribeAsync(topic);
         }
     }
 }

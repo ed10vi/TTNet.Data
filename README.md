@@ -26,7 +26,7 @@ app.Connected += (s, e) => Console.WriteLine("Connected");
 app.Up += (s, e) =>
 {
     Console.WriteLine(e.DeviceID);
-    foreach (var f in e.Message.UplinkMessage.DecodedPayload.EnumerateObject())
+    foreach (JsonProperty f in e.Message.UplinkMessage.DecodedPayload.EnumerateObject())
         Console.WriteLine($"\t{f.Name}: {f.Value}");
 
     // Or you can convert it to your data type
@@ -39,7 +39,7 @@ Listen to specific devices:
 ```csharp
 app["deviceId"].Up += (s, e) =>
 {
-    foreach (var f in e.Message.UplinkMessage.DecodedPayload.EnumerateObject())
+    foreach (JsonProperty f in e.Message.UplinkMessage.DecodedPayload.EnumerateObject())
         Console.WriteLine($"\t{f.Name}: {f.Value}");
 };
 ```

@@ -13,12 +13,12 @@ namespace TTNet.Data;
 /// </summary>
 public class App : AppBase
 {
-    private new IMqttClient MqttClient => base.MqttClient!;
+    private new IMqttClient _mqttClient => base._mqttClient!;
 
     /// <summary>
     /// Value indicating whether this <see cref="T:TTNet.Data.App"/> is connected.
     /// </summary>
-    public override bool IsConnected => MqttClient.IsConnected == true;
+    public override bool IsConnected => _mqttClient.IsConnected == true;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="T:TTNet.Data.App"/> class.
@@ -27,9 +27,9 @@ public class App : AppBase
     /// <param name="tenantId">Tenant identifier. Use null for The Things Stack Open Source deployment.</param>
     public App(string appId, string? tenantId = "ttn") : base(new MqttFactory().CreateMqttClient(), appId, tenantId)
     {
-        MqttClient.ConnectedHandler = this;
-        MqttClient.DisconnectedHandler = this;
-        MqttClient.ApplicationMessageReceivedHandler = this;
+        _mqttClient.ConnectedHandler = this;
+        _mqttClient.DisconnectedHandler = this;
+        _mqttClient.ApplicationMessageReceivedHandler = this;
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ public class App : AppBase
     /// <param name="cancellationToken">Cancellation token.</param>
     public async Task<MqttClientConnectResultCode> ConnectAsync(string server, int port, bool withTls, string username, string apiKey, CancellationToken cancellationToken = default)
     {
-        var result = await MqttClient.ConnectAsync(GetMqttClientOptions(server, port, withTls, username, apiKey), cancellationToken);
+        var result = await _mqttClient.ConnectAsync(GetMqttClientOptions(server, port, withTls, username, apiKey), cancellationToken);
         return result.ResultCode;
     }
 
@@ -53,7 +53,7 @@ public class App : AppBase
     /// </summary>
     /// <param name="cancellationToken">Cancellation token.</param>
     public Task DisconnectAsync(CancellationToken cancellationToken = default) =>
-        MqttClient.DisconnectAsync(new MqttClientDisconnectOptions(), cancellationToken);
+        _mqttClient.DisconnectAsync(new MqttClientDisconnectOptions(), cancellationToken);
 
     private IMqttClientOptions GetMqttClientOptions(string server, int port, bool withTls, string username, string apiKey)
     {
@@ -68,5 +68,5 @@ public class App : AppBase
     /// <summary>
     /// Dispose all resources used by this object
     /// </summary>
-    public override void Dispose() => MqttClient.Dispose();
+    public override void Dispose() => _mqttClient.Dispose();
 }
