@@ -255,9 +255,9 @@ public class DeviceHandler
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="T:TTNet.Data.DeviceHandler"/> class.
+    /// Initializes a new instance of the <see cref="TTNet.Data.DeviceHandler"/> class.
     /// </summary>
-    /// <param name="mqttClient">A <see cref="T:MQTTnet.Client.IMqttClient"/>.</param>
+    /// <param name="mqttClient">A <see cref="MQTTnet.Client.IMqttClient"/>.</param>
     /// <param name="deviceId">Device identifier (+ for all devices).</param>
     /// <param name="appId">App identifier.</param>
     /// <param name="tenantId">Tenant identifier. Use null for The Things Stack Open Source deployment.</param>
@@ -267,9 +267,9 @@ public class DeviceHandler
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="T:TTNet.Data.DeviceHandler"/> class.
+    /// Initializes a new instance of the <see cref="TTNet.Data.DeviceHandler"/> class.
     /// </summary>
-    /// <param name="mqttClient">A <see cref="T:MQTTnet.Extensions.ManagedClient.IManagedMqttClient"/>.</param>
+    /// <param name="mqttClient">A <see cref="MQTTnet.Extensions.ManagedClient.IManagedMqttClient"/>.</param>
     /// <param name="deviceId">Device identifier (+ for all devices).</param>
     /// <param name="appId">App identifier.</param>
     /// <param name="tenantId">Tenant identifier. Use null for The Things Stack Open Source deployment.</param>

@@ -16,12 +16,12 @@ public class App : AppBase
     private new IMqttClient _mqttClient => base._mqttClient!;
 
     /// <summary>
-    /// Value indicating whether this <see cref="T:TTNet.Data.App"/> is connected.
+    /// Value indicating whether this <see cref="TTNet.Data.App"/> is connected.
     /// </summary>
     public override bool IsConnected => _mqttClient.IsConnected == true;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="T:TTNet.Data.App"/> class.
+    /// Initializes a new instance of the <see cref="TTNet.Data.App"/> class.
     /// </summary>
     /// <param name="appId">App identifier.</param>
     /// <param name="tenantId">Tenant identifier. Use null for The Things Stack Open Source deployment.</param>
@@ -35,7 +35,7 @@ public class App : AppBase
     /// <summary>
     /// Connect to The Things Network server.
     /// </summary>
-    /// <returns>The <see cref="T:MQTTnet.Client.Connecting.MqttClientConnectResultCode"/>.</returns>
+    /// <returns>The <see cref="MQTTnet.Client.Connecting.MqttClientConnectResultCode"/>.</returns>
     /// <param name="server">Server domain name.</param>
     /// <param name="port">Connection port.</param>
     /// <param name="withTls">Use TLS.</param>

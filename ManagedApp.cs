@@ -14,7 +14,7 @@ public class ManagedApp : AppBase
     private new IManagedMqttClient _managedMqttClient => base._managedMqttClient!;
 
     /// <summary>
-    /// Value indicating whether this <see cref="T:TTNet.Data.ManagedApp"/> is connected.
+    /// Value indicating whether this <see cref="TTNet.Data.ManagedApp"/> is connected.
     /// </summary>
     public override bool IsConnected => _managedMqttClient.IsConnected == true;
 
@@ -24,7 +24,7 @@ public class ManagedApp : AppBase
     public int PendingMessagesCount => _managedMqttClient.PendingApplicationMessagesCount;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="T:TTNet.Data.ManagedApp"/> class.
+    /// Initializes a new instance of the <see cref="TTNet.Data.ManagedApp"/> class.
     /// </summary>
     /// <param name="appId">App identifier.</param>
     /// <param name="tenantId">Tenant identifier. Use null for The Things Stack Open Source deployment.</param>

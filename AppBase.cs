@@ -45,15 +45,15 @@ public abstract class AppBase : DeviceHandler, IDisposable,
     public string? TenantID { get; private set; }
 
     /// <summary>
-    /// Value indicating whether this <see cref="T:TTNet.Data.AppBase"/> is connected.
+    /// Value indicating whether this <see cref="TTNet.Data.AppBase"/> is connected.
     /// </summary>
     public abstract bool IsConnected { get; }
 
     /// <summary>
-    /// Get the <see cref="T:TTNet.Data.DeviceHandler"/> for a device ID.
+    /// Get the <see cref="TTNet.Data.DeviceHandler"/> for a device ID.
     /// </summary>
     /// <param name="deviceId">The device ID.</param>
-    /// <returns>The <see cref="T:TTNet.Data.DeviceHandler"/>.</returns>
+    /// <returns>The <see cref="TTNet.Data.DeviceHandler"/>.</returns>
     public DeviceHandler this[string deviceId]
     {
         get
@@ -97,9 +97,9 @@ public abstract class AppBase : DeviceHandler, IDisposable,
     public event EventHandler<Guid>? MessageSkipped;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="T:TTNet.Data.AppBase"/> class.
+    /// Initializes a new instance of the <see cref="TTNet.Data.AppBase"/> class.
     /// </summary>
-    /// <param name="mqttClient">A <see cref="T:MQTTnet.Client.IMqttClient"/>.</param>
+    /// <param name="mqttClient">A <see cref="MQTTnet.Client.IMqttClient"/>.</param>
     /// <param name="appId">App identifier.</param>
     /// <param name="tenantId">Tenant identifier. Use null for The Things Stack Open Source deployment.</param>
     protected AppBase(IMqttClient mqttClient, string appId, string? tenantId = "ttn") : base(mqttClient, "+", appId, tenantId)
@@ -111,9 +111,9 @@ public abstract class AppBase : DeviceHandler, IDisposable,
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="T:TTNet.Data.AppBase"/> class.
+    /// Initializes a new instance of the <see cref="TTNet.Data.AppBase"/> class.
     /// </summary>
-    /// <param name="mqttClient">A <see cref="T:MQTTnet.Extensions.ManagedClient.IManagedMqttClient"/>.</param>
+    /// <param name="mqttClient">A <see cref="MQTTnet.Extensions.ManagedClient.IManagedMqttClient"/>.</param>
     /// <param name="appId">App identifier.</param>
     /// <param name="tenantId">Tenant identifier. Use null for The Things Stack Open Source deployment.</param>
     protected AppBase(IManagedMqttClient mqttClient, string appId, string? tenantId = "ttn") : base(mqttClient, "+", appId, tenantId)
