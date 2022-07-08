@@ -1,8 +1,5 @@
 ﻿using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Client.Connecting;
-using MQTTnet.Client.Disconnecting;
-using MQTTnet.Client.Options;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,15 +24,15 @@ public class App : AppBase
     /// <param name="tenantId">Tenant identifier. Use null for The Things Stack Open Source deployment.</param>
     public App(string appId, string? tenantId = "ttn") : base(new MqttFactory().CreateMqttClient(), appId, tenantId)
     {
-        _mqttClient.ConnectedHandler = this;
-        _mqttClient.DisconnectedHandler = this;
-        _mqttClient.ApplicationMessageReceivedHandler = this;
+        _mqttClient.ConnectedAsync += HandleConnectedAsync;
+        _mqttClient.DisconnectedAsync += HandleDisconnectedAsync;
+        _mqttClient.ApplicationMessageReceivedAsync += HandleApplicationMessageReceivedAsync;
     }
 
     /// <summary>
     /// Connect to The Things Network server.
     /// </summary>
-    /// <returns>The <see cref="MQTTnet.Client.Connecting.MqttClientConnectResultCode"/>.</returns>
+    /// <returns>The <see cref="MQTTnet.Client.MqttClientConnectResultCode"/>.</returns>
     /// <param name="server">Server domain name.</param>
     /// <param name="port">Connection port.</param>
     /// <param name="withTls">Use TLS.</param>
@@ -55,7 +52,7 @@ public class App : AppBase
     public Task DisconnectAsync(CancellationToken cancellationToken = default) =>
         _mqttClient.DisconnectAsync(new MqttClientDisconnectOptions(), cancellationToken);
 
-    private IMqttClientOptions GetMqttClientOptions(string server, int port, bool withTls, string username, string apiKey)
+    private MqttClientOptions GetMqttClientOptions(string server, int port, bool withTls, string username, string apiKey)
     {
         var o = new MqttClientOptionsBuilder()
             .WithClientId(ClientID)

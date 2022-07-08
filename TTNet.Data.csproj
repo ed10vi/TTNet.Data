@@ -5,9 +5,9 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <PackageId>TTNet.Data</PackageId>
-    <Version>6.1.0</Version>
+    <Version>6.1.1</Version>
     <Authors>Eduardo Diez Viñuela</Authors>
-    <Description>A .NET library for The Things Network Data API</Description>
+    <Description>A .NET library for The Things Stack MQTT API</Description>
     <RepositoryUrl>https://github.com/ed10vi/TTNet.Data</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <!--<PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>-->
@@ -18,9 +18,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="6.0.2" />
-    <PackageReference Include="MQTTnet" Version="3.1.2" />
-    <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="3.1.2" />
+    <PackageReference Include="System.Text.Json" Version="6.0.5" />
+    <PackageReference Include="MQTTnet" Version="4.0.1.184" />
+    <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.0.1.184" />
   </ItemGroup>
 
   <ItemGroup>

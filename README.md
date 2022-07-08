@@ -1,6 +1,6 @@
 # TTNet.Data
 
-A .NET library for The Things Network MQTT Data API
+A .NET library for The Things Stack MQTT Data API
 
 ## Install
 

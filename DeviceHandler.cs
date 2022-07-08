@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Client.Publishing;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Protocol;
 using TTNet.Data.Model;
@@ -361,7 +360,7 @@ public class DeviceHandler
             .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
             .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
             .WithPayload(json)
-            .WithAtMostOnceQoS()
+            .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
             .Build();
         return _mqttClient.PublishAsync(pubMsg, cancellationToken);
     }
@@ -381,7 +380,7 @@ public class DeviceHandler
             .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
             .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
             .WithPayload(json)
-            .WithAtMostOnceQoS()
+            .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
             .Build();
         return _mqttClient.PublishAsync(pubMsg, cancellationToken);
     }
@@ -401,7 +400,7 @@ public class DeviceHandler
             .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
             .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
             .WithPayload(json)
-            .WithAtMostOnceQoS()
+            .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
             .Build();
         return _mqttClient.PublishAsync(pubMsg, cancellationToken);
     }
@@ -439,10 +438,10 @@ public class DeviceHandler
                 .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
                 .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
                 .WithPayload(json)
-                .WithAtMostOnceQoS()
+                .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
             )
             .Build();
-        await _managedMqttClient.PublishAsync(pubMsg);
+        await _managedMqttClient.EnqueueAsync(pubMsg);
         return pubMsg.Id;
     }
 
@@ -461,10 +460,10 @@ public class DeviceHandler
                 .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
                 .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
                 .WithPayload(json)
-                .WithAtMostOnceQoS()
+                .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
             )
             .Build();
-        await _managedMqttClient.PublishAsync(pubMsg);
+        await _managedMqttClient.EnqueueAsync(pubMsg);
         return pubMsg.Id;
     }
 
@@ -483,10 +482,10 @@ public class DeviceHandler
                 .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
                 .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
                 .WithPayload(json)
-                .WithAtMostOnceQoS()
+                .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
             )
             .Build();
-        await _managedMqttClient.PublishAsync(pubMsg);
+        await _managedMqttClient.EnqueueAsync(pubMsg);
         return pubMsg.Id;
     }
     #endregion

@@ -4,12 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Client.Connecting;
-using MQTTnet.Client.Disconnecting;
-using MQTTnet.Client.Publishing;
-using MQTTnet.Client.Receiving;
 using MQTTnet.Extensions.ManagedClient;
 using TTNet.Data.Model;
 
@@ -18,14 +13,7 @@ namespace TTNet.Data;
 /// <summary>
 /// A The Things Network Application Data connection.
 /// </summary>
-public abstract class AppBase : DeviceHandler, IDisposable,
-    IMqttClientConnectedHandler,
-    IMqttClientDisconnectedHandler,
-    IMqttApplicationMessageReceivedHandler,
-    IApplicationMessageProcessedHandler,
-    IApplicationMessageSkippedHandler,
-    IConnectingFailedHandler,
-    ISynchronizingSubscriptionsFailedHandler
+public abstract class AppBase : DeviceHandler, IDisposable
 {
     /// <summary>
     /// Client identifier.
@@ -124,7 +112,7 @@ public abstract class AppBase : DeviceHandler, IDisposable,
         _deviceHandlers = new Dictionary<string, DeviceHandler>();
     }
 
-    async Task IMqttApplicationMessageReceivedHandler.HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs e)
+    private protected async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs e)
     {
         Message? msg;
         MessageReceivedEventArgs eventArgs;
@@ -205,7 +193,7 @@ public abstract class AppBase : DeviceHandler, IDisposable,
         }
     }
 
-    async Task IMqttClientConnectedHandler.HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
+    private protected async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
     {
         // Subscribe to topics with handled events
         if (eventArgs.ConnectResult.ResultCode == MqttClientConnectResultCode.Success)
@@ -218,19 +206,19 @@ public abstract class AppBase : DeviceHandler, IDisposable,
             await Connected.InvokeAsync(this, eventArgs);
     }
 
-    Task IMqttClientDisconnectedHandler.HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs) =>
+    private protected Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs) =>
         Disconnected?.InvokeAsync(this, eventArgs) ?? Task.CompletedTask;
 
-    Task IApplicationMessageProcessedHandler.HandleApplicationMessageProcessedAsync(ApplicationMessageProcessedEventArgs eventArgs) =>
+    private protected Task HandleApplicationMessageProcessedAsync(ApplicationMessageProcessedEventArgs eventArgs) =>
         MessageProcessed?.InvokeAsync(this, eventArgs.ApplicationMessage.Id) ?? Task.CompletedTask;
 
-    Task IApplicationMessageSkippedHandler.HandleApplicationMessageSkippedAsync(ApplicationMessageSkippedEventArgs eventArgs) =>
+    private protected Task HandleApplicationMessageSkippedAsync(ApplicationMessageSkippedEventArgs eventArgs) =>
         MessageSkipped?.InvokeAsync(this, eventArgs.ApplicationMessage.Id) ?? Task.CompletedTask;
 
-    Task IConnectingFailedHandler.HandleConnectingFailedAsync(ManagedProcessFailedEventArgs eventArgs) =>
+    private protected Task HandleConnectingFailedAsync(ConnectingFailedEventArgs eventArgs) =>
         ExceptionThrowed?.InvokeAsync(this, eventArgs.Exception) ?? Task.CompletedTask;
 
-    Task ISynchronizingSubscriptionsFailedHandler.HandleSynchronizingSubscriptionsFailedAsync(ManagedProcessFailedEventArgs eventArgs) =>
+    private protected Task HandleSynchronizingSubscriptionsFailedAsync(ManagedProcessFailedEventArgs eventArgs) =>
         ExceptionThrowed?.InvokeAsync(this, eventArgs.Exception) ?? Task.CompletedTask;
 
     /// <summary>

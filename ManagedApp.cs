@@ -1,5 +1,5 @@
 using MQTTnet;
-using MQTTnet.Client.Options;
+using MQTTnet.Client;
 using MQTTnet.Extensions.ManagedClient;
 using System;
 using System.Threading.Tasks;
@@ -30,14 +30,14 @@ public class ManagedApp : AppBase
     /// <param name="tenantId">Tenant identifier. Use null for The Things Stack Open Source deployment.</param>
     public ManagedApp(string appId, string? tenantId = "ttn") : base(new MqttFactory().CreateManagedMqttClient(), appId, tenantId)
     {
-        _managedMqttClient.ConnectedHandler = this;
-        _managedMqttClient.DisconnectedHandler = this;
-        _managedMqttClient.ApplicationMessageReceivedHandler = this;
+        _managedMqttClient.ConnectedAsync += HandleConnectedAsync;
+        _managedMqttClient.DisconnectedAsync += HandleDisconnectedAsync;
+        _managedMqttClient.ApplicationMessageReceivedAsync += HandleApplicationMessageReceivedAsync;
 
-        _managedMqttClient.ApplicationMessageProcessedHandler = this;
-        _managedMqttClient.ApplicationMessageSkippedHandler = this;
-        _managedMqttClient.ConnectingFailedHandler = this;
-        _managedMqttClient.SynchronizingSubscriptionsFailedHandler = this;
+        _managedMqttClient.ApplicationMessageProcessedAsync += HandleApplicationMessageProcessedAsync;
+        _managedMqttClient.ApplicationMessageSkippedAsync += HandleApplicationMessageSkippedAsync;
+        _managedMqttClient.ConnectingFailedAsync += HandleConnectingFailedAsync;
+        _managedMqttClient.SynchronizingSubscriptionsFailedAsync += HandleSynchronizingSubscriptionsFailedAsync;
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public class ManagedApp : AppBase
     /// </summary>
     public Task StopAsync() => _managedMqttClient.StopAsync();
 
-    private IMqttClientOptions GetMqttClientOptions(string server, int port, bool withTls, string username, string apiKey)
+    private MqttClientOptions GetMqttClientOptions(string server, int port, bool withTls, string username, string apiKey)
     {
         var o = new MqttClientOptionsBuilder()
             .WithClientId(ClientID)
