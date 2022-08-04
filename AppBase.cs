@@ -18,7 +18,7 @@ public abstract class AppBase : DeviceHandler, IDisposable
     /// <summary>
     /// Client identifier.
     /// </summary>
-    public string ClientID { get; init; }
+    public string ClientID { get; private set; }
 
     private Dictionary<string, DeviceHandler> _deviceHandlers;
 
@@ -110,6 +110,16 @@ public abstract class AppBase : DeviceHandler, IDisposable
         TenantID = tenantId;
         ClientID = Guid.NewGuid().ToString();
         _deviceHandlers = new Dictionary<string, DeviceHandler>();
+    }
+
+    private protected MqttClientOptions GetMqttClientOptions(string server, int port, bool withTls, string username, string apiKey)
+    {
+        var o = new MqttClientOptionsBuilder()
+            .WithClientId(ClientID)
+            .WithTcpServer(server, port)
+            .WithCredentials(username, apiKey)
+            .WithCleanSession();
+        return withTls ? o.WithTls(p => p.SslProtocol = System.Security.Authentication.SslProtocols.None).Build() : o.Build();
     }
 
     private protected async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs e)

@@ -16,7 +16,7 @@ public class ManagedApp : AppBase
     /// <summary>
     /// Value indicating whether this <see cref="TTNet.Data.ManagedApp"/> is connected.
     /// </summary>
-    public override bool IsConnected => _managedMqttClient.IsConnected == true;
+    public override bool IsConnected => _managedMqttClient.IsConnected;
 
     /// <summary>
     /// Count of pending messages to send.
@@ -59,16 +59,6 @@ public class ManagedApp : AppBase
     /// Stop connection.
     /// </summary>
     public Task StopAsync() => _managedMqttClient.StopAsync();
-
-    private MqttClientOptions GetMqttClientOptions(string server, int port, bool withTls, string username, string apiKey)
-    {
-        var o = new MqttClientOptionsBuilder()
-            .WithClientId(ClientID)
-            .WithTcpServer(server, port)
-            .WithCredentials(username, apiKey)
-            .WithCleanSession();
-        return withTls ? o.WithTls(p => p.SslProtocol = System.Security.Authentication.SslProtocols.None).Build() : o.Build();
-    }
 
     /// <summary>
     /// Dispose all resources used by this object

@@ -15,7 +15,7 @@ public class App : AppBase
     /// <summary>
     /// Value indicating whether this <see cref="TTNet.Data.App"/> is connected.
     /// </summary>
-    public override bool IsConnected => _mqttClient.IsConnected == true;
+    public override bool IsConnected => _mqttClient.IsConnected;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TTNet.Data.App"/> class.
@@ -51,16 +51,6 @@ public class App : AppBase
     /// <param name="cancellationToken">Cancellation token.</param>
     public Task DisconnectAsync(CancellationToken cancellationToken = default) =>
         _mqttClient.DisconnectAsync(new MqttClientDisconnectOptions(), cancellationToken);
-
-    private MqttClientOptions GetMqttClientOptions(string server, int port, bool withTls, string username, string apiKey)
-    {
-        var o = new MqttClientOptionsBuilder()
-            .WithClientId(ClientID)
-            .WithTcpServer(server, port)
-            .WithCredentials(username, apiKey)
-            .WithCleanSession();
-        return withTls ? o.WithTls(p => p.SslProtocol = System.Security.Authentication.SslProtocols.None).Build() : o.Build();
-    }
 
     /// <summary>
     /// Dispose all resources used by this object
