@@ -1,5 +1,5 @@
 using MQTTnet;
-using MQTTnet.Client;
+using MQTTnet.Diagnostics;
 using MQTTnet.Extensions.ManagedClient;
 using System;
 using System.Threading.Tasks;
@@ -28,7 +28,9 @@ public class ManagedApp : AppBase
     /// </summary>
     /// <param name="appId">App identifier.</param>
     /// <param name="tenantId">Tenant identifier. Use null for The Things Stack Open Source deployment.</param>
-    public ManagedApp(string appId, string? tenantId = "ttn") : base(new MqttFactory().CreateManagedMqttClient(), appId, tenantId)
+    /// <param name="logger">MQTT logger.</param>
+    public ManagedApp(string appId, string? tenantId = "ttn", IMqttNetLogger? logger = null)
+        : base(new MqttFactory(logger ?? new MqttNetNullLogger()).CreateManagedMqttClient(), appId, tenantId)
     {
         _managedMqttClient.ConnectedAsync += HandleConnectedAsync;
         _managedMqttClient.DisconnectedAsync += HandleDisconnectedAsync;
