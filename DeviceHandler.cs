@@ -343,7 +343,7 @@ public class DeviceHandler
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <param name="schedule">Schedule.</param>
     public virtual Task<MqttClientPublishResult> PublishAsync(Downlink msg, CancellationToken cancellationToken, Schedule schedule = Schedule.Push) =>
-        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(new Message { Downlinks = new[] { msg } }, _serializerOptions), cancellationToken, schedule);
+        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(new Message { Downlinks = [msg] }, _serializerOptions), cancellationToken, schedule);
 
     /// <summary>
     /// Send the specified message.
@@ -358,7 +358,6 @@ public class DeviceHandler
             throw new InvalidOperationException("This is a managed instance. Use PublishAsync(msg, schedule).");
         var pubMsg = new MqttApplicationMessageBuilder()
             .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
-            .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
             .WithPayload(json)
             .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
             .Build();
@@ -378,7 +377,6 @@ public class DeviceHandler
             throw new InvalidOperationException("This is a managed instance. Use PublishAsync(msg, schedule).");
         var pubMsg = new MqttApplicationMessageBuilder()
             .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
-            .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
             .WithPayload(json)
             .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
             .Build();
@@ -398,7 +396,6 @@ public class DeviceHandler
             throw new InvalidOperationException("This is a managed instance. Use PublishAsync(msg, schedule).");
         var pubMsg = new MqttApplicationMessageBuilder()
             .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
-            .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
             .WithPayload(json)
             .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
             .Build();
@@ -421,7 +418,7 @@ public class DeviceHandler
     /// <param name="msg">Message.</param>
     /// <param name="schedule">Schedule.</param>
     public virtual Task<Guid> PublishAsync(Downlink msg, Schedule schedule = Schedule.Push) =>
-        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(new Message { Downlinks = new[] { msg } }, _serializerOptions), schedule);
+        PublishAsync(JsonSerializer.SerializeToUtf8Bytes(new Message { Downlinks = [msg] }, _serializerOptions), schedule);
 
     /// <summary>
     /// Send the specified message.
@@ -436,7 +433,6 @@ public class DeviceHandler
         var pubMsg = new ManagedMqttApplicationMessageBuilder()
             .WithApplicationMessage(builder => builder
                 .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
-                .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
                 .WithPayload(json)
                 .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
             )
@@ -458,7 +454,6 @@ public class DeviceHandler
         var pubMsg = new ManagedMqttApplicationMessageBuilder()
             .WithApplicationMessage(builder => builder
                 .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
-                .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
                 .WithPayload(json)
                 .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
             )
@@ -480,7 +475,6 @@ public class DeviceHandler
         var pubMsg = new ManagedMqttApplicationMessageBuilder()
             .WithApplicationMessage(builder => builder
                 .WithTopic($"{_topicBase}/down/{schedule.GetAttribute<EnumMemberAttribute>().Value}")
-                .WithPayloadFormatIndicator(MqttPayloadFormatIndicator.CharacterData)
                 .WithPayload(json)
                 .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
             )

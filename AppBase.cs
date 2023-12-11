@@ -95,7 +95,7 @@ public abstract class AppBase : DeviceHandler, IDisposable
         AppID = appId;
         TenantID = tenantId;
         ClientID = Guid.NewGuid().ToString();
-        _deviceHandlers = new Dictionary<string, DeviceHandler>();
+        _deviceHandlers = [];
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ public abstract class AppBase : DeviceHandler, IDisposable
         AppID = appId;
         TenantID = tenantId;
         ClientID = Guid.NewGuid().ToString();
-        _deviceHandlers = new Dictionary<string, DeviceHandler>();
+        _deviceHandlers = [];
     }
 
     private protected MqttClientOptions GetMqttClientOptions(string server, int port, bool withTls, string username, string apiKey)
@@ -119,7 +119,7 @@ public abstract class AppBase : DeviceHandler, IDisposable
             .WithTcpServer(server, port)
             .WithCredentials(username, apiKey)
             .WithCleanSession();
-        return withTls ? o.WithTls(p => p.SslProtocol = System.Security.Authentication.SslProtocols.None).Build() : o.Build();
+        return withTls ? o.WithTlsOptions(o => o.WithSslProtocols(System.Security.Authentication.SslProtocols.None)).Build() : o.Build();
     }
 
     private protected async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs e)
@@ -131,8 +131,7 @@ public abstract class AppBase : DeviceHandler, IDisposable
         // Parse the message and raise the corresponding event
         try
         {
-            msg = JsonSerializer.Deserialize<Message>(e.ApplicationMessage.Payload, _serializerOptions);
-            //msg = JsonDocument.Parse(e.ApplicationMessage.Payload, DocumentOptions).RootElement.ConvertTo<Message>();
+            msg = JsonSerializer.Deserialize<Message>(e.ApplicationMessage.PayloadSegment, _serializerOptions);
             if (msg == null)
                 throw new JsonException("JsonSerializer returned null");
             eventArgs = new MessageReceivedEventArgs(msg, e.ApplicationMessage.Topic, topic);
