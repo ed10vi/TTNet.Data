@@ -20,7 +20,7 @@ public abstract class AppBase : DeviceHandler, IDisposable
     /// </summary>
     public string ClientID { get; private set; }
 
-    private Dictionary<string, DeviceHandler> _deviceHandlers;
+    private readonly Dictionary<string, DeviceHandler> _deviceHandlers;
 
     /// <summary>
     /// Application identifier.
@@ -48,7 +48,9 @@ public abstract class AppBase : DeviceHandler, IDisposable
         {
             DeviceHandler result;
             if (_deviceHandlers.ContainsKey(deviceId))
+            {
                 result = _deviceHandlers[deviceId];
+            }
             else
             {
                 if (_mqttClient != null)
@@ -124,15 +126,14 @@ public abstract class AppBase : DeviceHandler, IDisposable
 
     private protected async Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs e)
     {
-        Message? msg;
+        Message msg;
         MessageReceivedEventArgs eventArgs;
         string[] topic = e.ApplicationMessage.Topic.Split('/');
 
         // Parse the message and raise the corresponding event
         try
         {
-            msg = JsonSerializer.Deserialize<Message>(e.ApplicationMessage.PayloadSegment, _serializerOptions);
-            if (msg == null)
+            msg = JsonSerializer.Deserialize<Message>(e.ApplicationMessage.PayloadSegment, _serializerOptions) ??
                 throw new JsonException("JsonSerializer returned null");
             eventArgs = new MessageReceivedEventArgs(msg, e.ApplicationMessage.Topic, topic);
             switch (topic[4])
